@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'title' %}Home Formulários{% endblock %}
+
+{% block script %} <script src="{% static 'formularios/js/funcoes.js' %}" defer></script> {% endblock %}
+
+{% block 'body' %}
+
+<!-- Modal -->
+<div class="modal fade" id="formStartModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">(formulario.nome)</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modal-body-confirm"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Não</button>
+        <button type="button" class="btn btn-success" id="start-button">Sim</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="h1">Lista de Formulários</div>
+<hr>
+{% for form in formulario_list %}
+  <button
+  class="btn btn-link modal-button"
+  data-pk="{{form.pk}}"
+  data-form="{{form.nome}}"
+  data-questoes="{{form.qtd_questoes}}"
+  data-tempo="{{form.tempo}}"
+  data-acertos="{{form.qtd_acertos}}"
+  data-toggle="modal"
+  data-target="#formStartModel"
+  >{{form.nome}}</button><br>
+{% endfor %}
+
+{% endblock %}

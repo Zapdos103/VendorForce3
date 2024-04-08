@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'head' %}
+
+{% endblock %}
+
+{% block 'title' %}Painel Empresa{% endblock %}
+
+{% block script %} {% endblock %}
+
+{% block 'body' %}
+    <h1>Painel Empresa  {{ nome_empresa }}</h1>
+    <hr>
+
+    <!-- Botoes do menu -->
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+
+        <div>
+            <button type="button" class="btn btn-primary" onclick="redirecionarParaCandidatos()">Candidatos</button>
+            <button type="button" class="btn btn-primary" onclick="redirecionarParaRelatorio()">Relatórios</button>
+            <button type="button" class="btn btn-primary">Enviar Convite</button>
+            <button type="button" class="btn btn-primary" onclick="redirecionarParaDashboard()">Dashboard</button>
+            <button type="button" class="btn btn-primary" onclick="redirecionarParaConfig()">Configurações</button>
+            <button type="button" id="Sair" class="btn btn-danger" onclick="logoutEmpresa()">Sair</button>
+
+
+        </div>
+    </div>
+    <br>
+
+    <h2>Lista dos funcionários     (Créditos: 0)</h2>
+    <br>
+
+    <!-- Dropdown para seleção de filtro -->
+    <label for="filtro">Filtrar por:</label>
+    <select id="filtro">
+        <option value="ordemAlfabetica">Ordem Alfabética</option>
+        <option value="dataCadastro">Data de Cadastro</option>
+        <option value="statusTeste">Status dos Testes</option>
+    </select>
+
+    <!-- Lista de funcionários -->
+    <ul id="listaFuncionarios">
+        <!-- Os funcionários serão exibidos aqui -->
+    </ul>
+
+    <div class="col-md-3">
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">Email</th>
+              <th scope="col">Telefone</th>
+              <th scope="col">Data de Envio</th>
+              <th scope="col">Status</th>
+              <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in funcionarios %}
+            <tr>
+              <th scope="row">{{ i.nome}} </th>
+              <td>{{ i.email }}</td>
+              <td>{{ i.telefone}} </td>
+              <td>NaN</td>
+              <td>{{i.status_questionario}}</td>
+              <td>NaN</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="col-md-3">
+    </div>
+
+{% endblock %}

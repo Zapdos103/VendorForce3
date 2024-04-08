@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block 'title' %}Cadastro Funcionário{% endblock %}
+
+{% block script %} {% endblock %}
+
+{% block 'body' %}
+    <h1>Cadastro de funcionários</h1>
+
+    <div class="container">
+        {% if status == '0' %}
+        <div class="alert alert-success" role="alert">
+            Cadastro realizado com sucessso!
+        </div>
+        {% endif %}
+
+        {% if status == '1' %}
+        <div class="alert alert-danger" role="alert">
+            Erro interno do sistema. Tente novamente.
+        </div>
+        {% endif %}
+
+        {% if status == '2' %}
+        <div class="alert alert-danger" role="alert">
+            Você precisa estar logado em uma conta empresarial.
+        </div>
+        {% endif %}
+
+        {% if status == '3' %}
+        <div class="alert alert-danger" role="alert">
+            Este email não está cadastrado no sistema.
+        </div>
+        {% endif %}
+
+
+
+        <form action="{% url 'cadastro_funcionario'%}" method="POST">{% csrf_token %}
+
+            <div class="form-group">
+                <label>Email</label>
+                <input name="email" class="form-control" type="text" placeholder="Email...">
+            </div>
+            <input type="submit" class="btn btn-primary" value="Cadastrar">
+        </form>
+    </div>
+{% endblock %}

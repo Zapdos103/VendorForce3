@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'head' %} {% endblock %}
+
+{% block 'title' %} {{formulario.nome}} {% endblock %}
+
+{% block script %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'formularios/js/formulario.js' %}" defer></script>
+
+{% endblock %}
+
+{% block 'body' %}
+
+{{ formulario.nome }}
+<hr>
+<form id="formulario" class="mt-3 mb-3"> {% csrf_token %}
+    <div>{{ texto_formulario }}</div>
+    <br>
+    <div id="caixa"></div>
+    <button type="submit" class="btn btn-primary mt-3">Enviar</button>
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'title' %}Cadastro Landing{% endblock %}
+
+{% block script %} {% endblock %}
+
+{% block 'body' %}
+    <h1>Cadastre sua empresa</h1>
+    <div class="container">
+
+        {% if status == '0' %}
+        <div class="alert alert-success" role="alert">
+            Cadastro realizado com sucessso!
+        </div>
+        {% endif %}
+
+        {% if status == '1' %}
+        <div class="alert alert-danger" role="alert">
+            Digite a senha novamente.
+        </div>
+        {% endif %}
+
+        {% if status == '2' %}
+        <div class="alert alert-danger" role="alert">
+            Sua senha deve conter pelo menos 8 dígitos.
+        </div>
+        {% endif %}
+
+        {% if status == '3' %}
+        <div class="alert alert-danger" role="alert">
+            Nome, email ou telefone já cadastrado. Por favor, preencha novamente.
+        </div>
+        {% endif %}
+
+        {% if status == '4' %}
+        <div class="alert alert-danger" role="alert">
+            Insira um formato de email válido.
+        </div>
+        {% endif %}
+
+        {% if status == '5' %}
+        <div class="alert alert-danger" role="alert">
+            Número de telefone inválido. Tente novamente.
+        </div>
+        {% endif %}
+
+        {% if status == '10' %}
+        <div class="alert alert-danger" role="alert">
+            Preencha todos os campos.
+        </div>
+        {% endif %}
+
+        {% if status == '11' %}
+        <div class="alert alert-danger" role="alert">
+            Erro interno do sistema. Realize seu cadastro novamente.
+        </div>
+        {% endif %}
+        <br>
+        <form action="{% url 'cadastro_landing'%}" method="POST">{% csrf_token %}
+
+            <div class="form-group">
+                <label>Razão social</label>
+                <input name="razao_social" class="form-control" type="text" placeholder="Razão social...">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Nome</label>
+                    <input name="nome" class="form-control" type="text" placeholder="Nome...">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Cargo</label>
+                    <input name="cargo" class="form-control" type="text" placeholder="Selecione o cargo...">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Email</label>
+                    <input name="email" class="form-control" type="text" placeholder="Email...">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Telefone</label>
+                    <input name="telefone" class="form-control" type="text" placeholder="Telefone...">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Setor</label>
+                    <input name="setor" class="form-control" type="text" placeholder="Selecione o setor...">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Segmento</label>
+                    <input name="segmento" class="form-control" type="text" placeholder="Segmento...">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Número de vendedores</label>
+                <input name="qtd_vendedores" class="form-control" type="text" placeholder="Selecione o n° de vendedores...">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Senha</label>
+                    <input name="senha" class="form-control" type="text" placeholder="Digite uma senha...">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Repetir senha</label>
+                    <input name="repetir_senha" class="form-control" type="text" placeholder="Repita a senha...">
+                </div>
+            </div>
+
+            <div class="text-center">
+                <input type="submit" class="btn btn-primary" value="Cadastrar">
+            </div>
+        </form>
+
+        </div>
+    </div>
+{% endblock %}

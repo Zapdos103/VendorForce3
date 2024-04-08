@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'title' %}Login Empresa{% endblock %}
+
+{% block script %} {% endblock %}
+
+{% block 'body' %}
+
+    <h1>Login Empresa</h1>
+    <div class="container">
+
+    {% if status == '1' %}
+        <div class="alert alert-danger" role="alert">
+            Email ou senha inválidos. Faça o login novamente.
+        </div>
+    {% endif %}
+
+    {% if status == '2' %}
+        <div class="alert alert-danger" role="alert">
+            Erro interno do sistema. Faça o login novamente.
+        </div>
+    {% endif %}
+
+    <br>
+    <form action="{% url 'login_empresa'%}" method="POST"> {% csrf_token %}
+        <div class="form-group">
+            <label>Email</label>
+            <input name="email" class="form-control" type="text" placeholder="Digite seu email">
+        </div>
+        <br>
+        <div class="form-group">
+            <label>Senha</label>
+            <input name="senha" class="form-control" type="text" placeholder="Digite sua senha">
+        </div>
+        <br>
+        <div class="text-center">
+            <input type="submit" class="btn btn-primary" value="Login">
+        </div>
+    </form>
+    </div>
+
+{% endblock %}
