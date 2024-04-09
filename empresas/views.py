@@ -135,6 +135,7 @@ def cadastro_funcionario(request):
                     empresa=Empresa.objects.get(id=empresa_id),
                     nome=funcionario1.nome,
                     email=funcionario1.email,
+                    senha=funcionario1.senha,
                     funcao=funcionario1.funcao,
                     telefone=funcionario1.telefone,
                     status_questionario=funcionario1.status_questionario,
@@ -169,6 +170,7 @@ def cadastro_candidato(request):
         elif request.method == 'POST':
             nome_completo = request.POST.get('nome_completo')
             email = request.POST.get('email')
+            senha = request.POST.get('senha')
             funcao = request.POST.get('funcao')
             telefone = request.POST.get('telefone')
             status_pendente, _ = Status.objects.get_or_create(nome='Pedente')
@@ -215,6 +217,7 @@ def cadastro_candidato(request):
                 candidato = Candidato(
                     nome=nome_completo.strip(),
                     email=email,
+                    senha=senha,
                     funcao=funcao,
                     telefone=''.join(filter(str.isdigit, telefone)),
                     status_questionario=status_pendente,

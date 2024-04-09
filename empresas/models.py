@@ -75,6 +75,7 @@ class Funcionario(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
     nome = models.CharField(max_length=100, blank=False)
     email = models.EmailField(blank=False)
+    senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10, choices=FUNCAO_CHOICES, blank=False)
     telefone = models.CharField(max_length=11, blank=False)
     status_questionario = models.ForeignKey(Status, on_delete=models.DO_NOTHING, default=1)
@@ -87,6 +88,7 @@ class Funcionario(models.Model):
 class Candidato(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField()
+    senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10, choices=FUNCAO_CHOICES)
     telefone = models.CharField(max_length=11)
     status_questionario = models.ForeignKey(Status, on_delete=models.DO_NOTHING, default=1)
