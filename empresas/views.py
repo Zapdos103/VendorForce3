@@ -297,6 +297,9 @@ def login_funcionario(request):
             return redirect('/auth/login_funcionario/?status=2')
 
 def login_candidato(request):
+    if request.session.get('candidato'):
+        return redirect('/painel/home_candidato')
+
     if request.method == 'GET':
         status = request.GET.get('status')
         return render(request, 'login_candidato.html', {'status': status})
@@ -315,7 +318,7 @@ def login_candidato(request):
 
             elif len(candidato) == 0:
                 # Email ou Senha incorretos
-                return redirect('auth/login_candidato/?status=1')
+                return redirect('/auth/login_candidato/?status=1')
 
         except ObjectDoesNotExist:
             # Erro inesperado
