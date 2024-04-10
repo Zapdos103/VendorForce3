@@ -290,7 +290,7 @@ def login_funcionario(request):
 
             elif len(funcionario) == 0:
                 # Email ou Senha incorretos
-                return redirect('auth/login_funcionario/?status=1')
+                return redirect('/auth/login_funcionario/?status=1')
 
         except ObjectDoesNotExist:
             # Erro inesperado
