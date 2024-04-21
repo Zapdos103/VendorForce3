@@ -13,9 +13,11 @@ def home_empresa(request):
         empresa = Empresa.objects.get(id=request.session['empresa'])
         nome_empresa = empresa.nome
         funcionarios = Funcionario.objects.filter(empresa=empresa)
-        # print(funcionarios)
+        exibir_navbar = True
+        contexto_app = 'painel'
 
-        return render(request, 'home_empresa.html', {'nome_empresa': nome_empresa, 'funcionarios': funcionarios})
+
+        return render(request, 'home_empresa.html', {'nome_empresa': nome_empresa, 'funcionarios': funcionarios, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
 
     else:
         return redirect('/auth/login_empresa/?status=2')
@@ -39,8 +41,10 @@ def home_funcionario(request):
     if request.session.get('funcionario'):
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         nome_funcionario = funcionario.nome
+        exibir_navbar = True
+        contexto_app = 'painel'
 
-        return render(request, 'home_funcionario.html', {'nome_funcionario': nome_funcionario})
+        return render(request, 'home_funcionario.html', {'nome_funcionario': nome_funcionario, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
 
     else:
         return redirect('/auth/login_funcionario/?status=2')
@@ -52,8 +56,10 @@ def home_candidato(request):
     if request.session.get('candidato'):
         candidato = Candidato.objects.get(id=request.session['candidato'])
         nome_candidato = candidato.nome
+        exibir_navbar = True
+        contexto_app = 'painel'
 
-        return render(request, 'home_candidato.html', {'nome_candidato': nome_candidato})
+        return render(request, 'home_candidato.html', {'nome_candidato': nome_candidato, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
 
     else:
         return redirect('/auth/login_candidato/?status=2')

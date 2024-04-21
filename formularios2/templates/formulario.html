@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'head' %} {% endblock %}
+
+{% block 'title' %} Formulário {% endblock %}
+
+{% block 'body' %}
+
+<div id="app">
+    <div class="container mx-auto mt-5 pt-5">
+        <div class="col-md-6 mx-auto">
+            <h1>Formulário</h1>
+            <hr>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+                <label class="form-check-label" for="exampleRadios1">
+                    Default radio
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+                <label class="form-check-label" for="exampleRadios2">
+                    Second default radio
+                </label>
+            </div>
+            <hr>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script>
+      const baseUrl = "http://127.0.0.1:8000/api/get_formulario/"
+      var app = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                categoria: "{{categoria}}",
+                questoes: []
+            }
+        },
+        methods : {
+            getQuestoes(){
+                var _this = this
+                fetch(`/api/get_formulario/?categoria=${_this.categoria}`)
+                .then(response => response.json())
+                .then(result =>{
+                    console.log(result)
+                    _this.questoes = result.data
+                })
+                .catch(error => {
+                console.error('Erro ao obter questões:', error);
+                });
+            }
+        },
+        created() {
+            this.getQuestoes()
+            console.log('FUNCIONANDO')
+
+        },
+      });
+</script>
+
+{% endblock %}

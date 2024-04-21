@@ -6,6 +6,8 @@
 
 {% block script %} {% endblock %}
 
+{% block 'navbar' %} {% endblock %}
+
 {% block 'body' %}
     <h1>Cadastre sua empresa</h1>
     <div class="container">
@@ -58,6 +60,7 @@
         </div>
         {% endif %}
         <br>
+
         <form action="{% url 'cadastro_landing'%}" method="POST">{% csrf_token %}
 
             <div class="form-group">
@@ -121,6 +124,7 @@
             <div class="text-center">
                 <input type="submit" class="btn btn-primary" value="Cadastrar">
             </div>
+
         </form>
 
         </div>

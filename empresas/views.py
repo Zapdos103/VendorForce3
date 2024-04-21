@@ -16,8 +16,11 @@ def cadastro_landing(request):
 
     else:
         if request.method == 'GET':
-            status = request.GET.get('status')
-            return render(request, 'cadastro_landing.html', {'status': status})
+            contexto = {'exibir_navbar': True,
+                        'contexto_app:': 'auth',
+                        'status': request.GET.get('status')}
+
+            return render(request, 'cadastro_landing.html', contexto)
 
         elif request.method == 'POST':
             razao_social = request.POST.get('razao_social')
@@ -98,6 +101,11 @@ def cadastro_landing(request):
 
 
 def cadastro_completo(request):
+    if request.method == 'GET':
+        contexto = {'exibir_navbar': True,
+                    'contexto_app:': 'auth'}
+        return render(request, 'cadastro_landing.html', contexto)
+
     #elif request.method == 'POST':
         #razao_social = request.POST.get('razao_social')
         #endereco = reques.POST.get('endereco')
@@ -119,8 +127,10 @@ def cadastro_completo(request):
 
 def cadastro_funcionario(request):
     if request.method == 'GET':
-        status = request.GET.get('status')
-        return render(request, 'cadastro_funcionario.html', {'status': status})
+        contexto = {'exibir_navbar': True,
+                    'contexto_app:': 'auth',
+                    'status': request.GET.get('status')}
+        return render(request, 'cadastro_funcionario.html', contexto)
 
     elif request.method == 'POST':
         # Primeiro verificamos se a empresa está logada; se sim -> tentar salvar os dados; se não -> exibir status
@@ -164,8 +174,11 @@ def cadastro_candidato(request):
 
     else:
         if request.method == 'GET':
-            status = request.GET.get('status')
-            return render(request, 'cadastro_candidato.html', {'status': status})
+            contexto = {'exibir_navbar': True,
+                        'contexto_app:': 'auth',
+                        'status': request.GET.get('status')}
+
+            return render(request, 'cadastro_candidato.html', contexto)
 
         elif request.method == 'POST':
             nome_completo = request.POST.get('nome_completo')
@@ -238,14 +251,16 @@ def login_empresa(request):
         return redirect('/painel/home_empresa')
 
     if request.method == 'GET':
-        status = request.GET.get('status')
-        return render(request, 'login_empresa.html', {'status': status})
+        contexto = {'exibir_navbar': True,
+                    'contexto_app:': 'auth',
+                    'status': request.GET.get('status')}
+        return render(request, 'login_empresa.html', contexto)
 
     elif request.method == 'POST':
         email = request.POST.get('email')
         senha = request.POST.get('senha')
 
-        #senha = sha256(senha.encode()).hexdigest()
+        # senha = sha256(senha.encode()).hexdigest()
         # empresa = Empresa.objects.get(email=email, senha=senha)
 
         try:
@@ -270,8 +285,10 @@ def login_funcionario(request):
 
     if request.method == 'GET':
         request.session.flush()
-        status = request.GET.get('status')
-        return render(request, 'login_funcionario.html', {'status': status})
+        contexto = {'exibir_navbar': True,
+                    'contexto_app:': 'auth',
+                    'status': request.GET.get('status')}
+        return render(request, 'login_funcionario.html', contexto)
 
     elif request.method == 'POST':
         email = request.POST.get('email')
@@ -301,8 +318,11 @@ def login_candidato(request):
         return redirect('/painel/home_candidato')
 
     if request.method == 'GET':
-        status = request.GET.get('status')
-        return render(request, 'login_candidato.html', {'status': status})
+        request.session.flush()
+        contexto = {'exibir_navbar': True,
+                    'contexto_app:': 'auth',
+                    'status': request.GET.get('status')}
+        return render(request, 'login_candidato.html', contexto)
 
     elif request.method == 'POST':
         email = request.POST.get('email')
