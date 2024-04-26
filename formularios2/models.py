@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+import random
 
 # Classe base com atributos de data
 class BaseModel(models.Model):
@@ -47,7 +48,8 @@ class Questao(BaseModel):
         return str(self.nome)
 
     def get_respostas(self):
-        respostas = Resposta.objects.filter(questao=self)
+        respostas = list(Resposta.objects.filter(questao=self))
+        random.shuffle(respostas)
         data = []
         for r in respostas:
             data.append({

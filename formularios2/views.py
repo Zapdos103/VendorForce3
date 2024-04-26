@@ -34,6 +34,7 @@ def get_formulario(request):
         print(questoes)
         data = []
         random.shuffle(questoes)
+
         for q in questoes:
             data.append({
                 'uid': q.uid,
