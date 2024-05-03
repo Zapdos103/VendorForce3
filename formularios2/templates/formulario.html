@@ -12,67 +12,90 @@
     <div class="container mx-auto mt-5 pt-5">
         <div class="col-md-6 mx-auto">
             <h1>Formulário</h1>
+            <form method="POST" action="{% url 'resultado2' %}"> {% csrf_token %}
                 <div v-for="q in questoes">
                 <hr>
                 <p>[[q.nome]]</p>
                 <div class="form-check" v-for="r in q.respostas ">
-                    <input @change="checkResposta($event , q.uid)" :value="r.resposta" class="form-check-input" type="radio" :name="'questao_' + q.uid" id="exampleRadios1" value="option1" checked>
+                    <input @change="checkResposta($event , q.uid)" :value="r.resposta" class="form-check-input" type="radio" :name="'questao_' + q.uid" id="q.uid" value="option1" checked>
                     <label class="form-check-label" :for="'questao_' + q.uid">
                         [[r.resposta]]
                     </label>
                 </div>
 
-            </div>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Enviar" @click="enviarRespostas">
+            </form>
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script>
-      const baseUrl = "http://127.0.0.1:8000/api/get_formulario/"
-      var app = new Vue({
+
+    var app = new Vue({
         el: '#app',
         delimiters: ['[[', ']]'],
         data() {
             return {
                 categoria: "{{categoria}}",
-                questoes: []
+                questoes: [],
+                respostasMarcadas: [] // Lista para armazenar as respostas marcadas
             }
         },
         methods : {
-            getQuestoes(){
-                var _this = this
+            getQuestoes() {
+                var _this = this;
                 fetch(`{% url 'get_formulario' %}?categoria=${this.categoria}`)
                 .then(response => response.json())
-                .then(result =>{
-                    console.log(result)
-                    _this.questoes = result.data
+                .then(result => {
+                    _this.questoes = result.data;
                 })
                 .catch(error => {
-                console.error('Erro ao obter questões:', error);
+                    console.error('Erro ao obter questões:', error);
                 });
             },
-            checkResposta(event, uid){
-                console.log(event.target.value, uid)
-                this.questoes.map(questao => {
-                    respostas = questao.respostas
-                    for (i=0;i < respostas.length;i++) {
-                        if (respostas[i].resposta == event.target.value){
-                            if (respostas[i].resposta_correta) {
-                                console.log('Resposta correta.')
-                            } else {
-                                console.log('Resposta incorreta')
-                            }
-                        }
+            checkResposta(event, uid) {
+                console.log('Opção selecionada:', event.target.value);
+                console.log('UID da questão:', uid);
+                let questao = this.questoes.find(q => q.uid === uid);
+                console.log(questao)
+                if (questao) {
+                    let respostaSelecionada = questao.respostas.find(r => r.resposta === event.target.value);
+                    console.log(respostaSelecionada)
+                    if (respostaSelecionada) {
+                        // Adicione a resposta marcada à lista respostasMarcadas
+                        this.respostasMarcadas.push({
+                            texto_da_resposta: respostaSelecionada.resposta,
+                            resposta_correta: respostaSelecionada.resposta_correta,
+                            formulario_da_resposta: questao.formulario
+                        });
+                        console.log('respostasMarcadas:', this.respostasMarcadas)
                     }
-                })
+                }
             },
+            enviarRespostas() {
+            // Enviar respostasMarcadas para a view Django
+            fetch(`{% url 'resultado2' %}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ respostasMarcadas: this.respostasMarcadas }),
+            })
+            .then(response => response.json())
+            .then(json => console.log(json))
+            .catch(error => {
+                console.error('Erro ao enviar respostas:', error);
+            });
+        },
+            // Outras Funções
         },
         created() {
-            this.getQuestoes()
-            console.log('Funcionando')
+            this.getQuestoes();
 
         },
-      });
+    });
+
 </script>
 
 {% endblock %}

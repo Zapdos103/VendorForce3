@@ -40,7 +40,7 @@ class Categoria(BaseModel):
 
 class Questao(BaseModel):
     nome = models.CharField(max_length=100)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
     formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
     qtd_respostas = models.IntegerField(default=4)
 

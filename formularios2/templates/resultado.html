@@ -1,0 +1,21 @@
+<!-- resultados.html -->
+
+{% extends 'base.html' %}
+
+{% block 'title' %} Resultados {% endblock %}
+
+{% block 'body' %}
+
+<h1>Resultados</h1>
+
+{% if respostasMarcadas %}
+    <ul>
+        {% for resposta in respostasMarcadas %}
+            <li>{{ resposta }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma resposta marcada.</p>
+{% endif %}
+
+{% endblock %}
