@@ -11,7 +11,14 @@
 <div id="app">
     <div class="container mx-auto mt-5 pt-5">
         <div class="col-md-6 mx-auto">
-            <h1>Formulário</h1>
+            <div class="row">
+                <div class="col">
+                    <h1>Formulário</h1>
+                </div>
+                <div class="col text-right" id="timer-box">
+                    <b v-text="timerText"></b>
+                </div>
+            </div>
             <form method="POST" action="{% url 'resultado2' %}"> {% csrf_token %}
                 <div v-for="q in questoes">
                 <hr>
@@ -32,27 +39,61 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script>
 
+
+    const ativarTimer = (tempo) => {
+    if (tempo === 0) {
+        return;
+    }
+    let minutos = tempo - 1;
+    let segundos = 60;
+
+        const timer = setInterval(() => {
+            segundos--;
+
+            if (segundos < 0) {
+                segundos = 59;
+                minutos--;
+            }
+
+            if (minutos < 0) {
+                clearInterval(timer);
+                alert('Tempo Esgotado');
+                app.enviarRespostas();
+
+            }
+
+            let displayMinutos = minutos < 10 ? '0' + minutos : minutos;
+            let displaySegundos = segundos < 10 ? '0' + segundos : segundos;
+
+            app.timerText = `${displayMinutos}:${displaySegundos}`;
+        }, 1000);
+    };
+
     var app = new Vue({
         el: '#app',
         delimiters: ['[[', ']]'],
         data() {
             return {
-                categoria: "{{categoria}}",
+                formulario: "{{ formulario|safe }}",
                 questoes: [],
-                respostasMarcadas: [] // Lista para armazenar as respostas marcadas
+                respostasMarcadas: [],
+                timerText: '',
+                tempo: 0,
             }
         },
-        methods : {
+        methods: {
             getQuestoes() {
                 var _this = this;
-                fetch(`{% url 'get_formulario' %}?categoria=${this.categoria}`)
-                .then(response => response.json())
-                .then(result => {
-                    _this.questoes = result.data;
-                })
-                .catch(error => {
-                    console.error('Erro ao obter questões:', error);
-                });
+                fetch(`{% url 'get_formulario' %}?formulario=${this.formulario}`)
+                    .then(response => response.json())
+                    .then(result => {
+                        _this.questoes = result.data;
+                        _this.tempo = _this.questoes[0].tempo;
+                        _this.ativarTimer(_this.tempo);
+                    })
+                    .catch(error => {
+                        console.error('Erro ao obter questões:', error);
+                    });
             },
             checkResposta(event, uid) {
                 console.log('Opção selecionada:', event.target.value);
@@ -73,26 +114,28 @@
                     }
                 }
             },
+            ativarTimer() {
+                ativarTimer(this.tempo);
+            },
             enviarRespostas() {
-            // Enviar respostasMarcadas para a view Django
-            fetch(`{% url 'resultado2' %}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ respostasMarcadas: this.respostasMarcadas }),
-            })
-            .then(response => response.json())
-            .then(json => console.log(json))
-            .catch(error => {
-                console.error('Erro ao enviar respostas:', error);
-            });
-        },
-            // Outras Funções
+                // Enviar respostasMarcadas para a view Django
+                fetch(`{% url 'resultado2' %}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ respostasMarcadas: this.respostasMarcadas }),
+                    })
+                    .then(response => response.json())
+                    .then(json => console.log(json))
+                    .catch(error => {
+                        console.error('Erro ao enviar respostas:', error);
+                    });
+            },
         },
         created() {
             this.getQuestoes();
-
+            this.ativarTimer();
         },
     });
 

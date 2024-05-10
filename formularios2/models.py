@@ -2,8 +2,8 @@ from django.db import models
 import uuid
 import random
 
-# Classe base com atributos de data
 class BaseModel(models.Model):
+    # Classe base com atributos de data e uid
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     data_criacao = models.DateField(auto_now=True)
     update = models.DateField(auto_now=True)
@@ -40,8 +40,8 @@ class Categoria(BaseModel):
 
 class Questao(BaseModel):
     nome = models.CharField(max_length=100)
-    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
     formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
     qtd_respostas = models.IntegerField(default=4)
 
     def __str__(self):

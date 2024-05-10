@@ -16,11 +16,11 @@
     <div class="col-md-6 mx-auto"></div>
         <form> {% csrf_token %}
             <div class="form-group">
-                <label>Selecione a categoria</label>
-                <select class="form-control" name="categoria">
+                <label>Selecione o formulário</label>
+                <select class="form-control" name="formulario">
                     <option value="Escolher">Escolher</option>
-                    {% for categoria in categorias %}
-                        <option value="{{categoria.nome}}">{{categoria.nome}}</option>
+                    {% for formulario in formularios %}
+                        <option value="{{formulario.nome}}">{{formulario.nome}}</option>
                     {% endfor %}
                 </select>
             </div>

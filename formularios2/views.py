@@ -9,15 +9,17 @@ import random
 
 def home(request):
     contexto = {'categorias': Categoria.objects.all(),
+                'formularios': Formulario.objects.all(),
                'exibir_navbar': True,
                'contexto_app': 'formularios2'}
-    if request.GET.get('categoria'):
-        return redirect(f'/formularios2/formulario/?categoria={request.GET.get("categoria")}')
+    if request.GET.get('formulario'):
+        return redirect(f'/formularios2/formulario/?formulario={request.GET.get("formulario")}')
 
     return render(request, 'home.html', contexto)
 
 def formulario(request):
     contexto = {'categoria': request.GET.get('categoria'),
+                'formulario': request.GET.get('formulario'),
                'exibir_navbar': True,
                'contexto_app': 'formularios2'}
 
@@ -26,10 +28,11 @@ def formulario(request):
 def get_formulario(request):
     try:
         questoes = Questao.objects.all()
-        formularios = Formulario.objects.all()
+        # formularios = Formulario.objects.all()
 
-        if request.GET.get('categoria'):
-            questoes = questoes.filter(categoria__nome__icontains=request.GET.get("categoria"))
+        if request.GET.get('formulario'):
+            print(request.GET.get('formulario'))
+            questoes = questoes.filter(formulario__nome__icontains=request.GET.get("formulario"))
 
         questoes = list(questoes)
         print(questoes)
@@ -41,6 +44,7 @@ def get_formulario(request):
                 'uid': q.uid,
                 'nome': q.nome,
                 'formulario': q.formulario.nome,
+                'tempo': q.formulario.tempo,
                 'categoria': q.categoria.nome,
                 'qtd_respostas': q.qtd_respostas,
                 'respostas': q.get_respostas(),
@@ -115,19 +119,19 @@ def resultado(request):
         return HttpResponse('Faça seu Login.')
 
 def resultado2(request):
-    if request.session.get('candidato') or request.session.get('funcionario'):
+    #if request.session.get('candidato') or request.session.get('funcionario'):
 
-        if request.session.get('candidato'):
-            candidato = Candidato.objects.get(id=request.session['candidato'])
-        if request.session.get('funcionario'):
-            funcionario = Funcionario.objects.get(id=request.session['funcionario'])
+        #if request.session.get('candidato'):
+            #candidato = Candidato.objects.get(id=request.session['candidato'])
+        #if request.session.get('funcionario'):
+            #funcionario = Funcionario.objects.get(id=request.session['funcionario'])
 
-        if request.method == 'GET':
-            return render(request, 'formulario.html')
+    if request.method == 'GET':
+        return render(request, 'formulario.html')
 
-        elif request.method == 'POST':
-            respostasMarcadas = request.POST.get('respostasMarcadas')
-            print(respostasMarcadas)
-            return render(request, 'resultado.html', {'respostasMarcadas': respostasMarcadas})
+    elif request.method == 'POST':
+        respostasMarcadas = request.POST.get('respostasMarcadas')
+        print(respostasMarcadas)
+        return render(request, 'resultado.html', {'respostasMarcadas': respostasMarcadas})
 
     return HttpResponse('Faça seu Login.')
