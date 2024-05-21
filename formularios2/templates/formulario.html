@@ -13,7 +13,7 @@
         <div class="col-md-6 mx-auto">
             <div class="row">
                 <div class="col">
-                    <h1>Formulário</h1>
+                    <h1> nome_do_formulario </h1>
                 </div>
                 <div class="col text-right" id="timer-box">
                     <b v-text="timerText"></b>
@@ -31,7 +31,7 @@
                 </div>
 
                 </div>
-                <input class="btn btn-primary" type="submit" value="Enviar" @click="enviarRespostas">
+                <input class="btn btn-primary" type="submit" value="Enviar" @click.prevent="enviarRespostas">
             </form>
         </div>
     </div>
@@ -119,10 +119,12 @@
             },
             enviarRespostas() {
                 // Enviar respostasMarcadas para a view Django
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 fetch(`{% url 'resultado2' %}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
                         },
                         body: JSON.stringify({ respostasMarcadas: this.respostasMarcadas }),
                     })

@@ -13,7 +13,7 @@
 {% block 'navbar' %} {% endblock %}
 
 {% block 'body' %}
-    <h1>Painel Empresa  {{ nome_empresa }}</h1>
+    <h1>Painel Empresa{{ nome_empresa }}</h1>
     <hr>
 
     <!-- Botoes do menu -->
@@ -62,15 +62,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in funcionarios %}
-            <tr>
-              <th scope="row">{{ i.nome}} </th>
-              <td>{{ i.email }}</td>
-              <td>{{ i.telefone}} </td>
-              <td>NaN</td>
-              <td>{{i.status_questionario}}</td>
-              <td>NaN</td>
-            </tr>
+            {% for funcionario in funcionarios %}
+                <tr>
+                  <th scope="row"><a href="{% url 'gerenciar_funcionario' funcionario.id %}">{{ funcionario.nome}}</a></th>
+                  <td>{{ funcionario.email }}</td>
+                  <td>{{ funcionario.telefone}} </td>
+                  <td>NaN</td>
+                  <td>{{funcionario.status_questionario}}</td>
+                  <td>NaN</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

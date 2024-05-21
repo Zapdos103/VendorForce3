@@ -29,13 +29,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in candidatos %}
+            {% for candidato in candidatos %}
             <tr>
-              <th scope="row">{{ i.nome}} </th>
-              <td>{{ i.email }}</td>
-              <td>{{ i.telefone}} </td>
+              <th scope="row"><a href="{% url 'gerenciar_candidato' candidato.id%}">{{ candidato.nome}}</a></th>
+              <td>{{ candidato.email }}</td>
+              <td>{{ candidato.telefone}} </td>
               <td>NaN</td>
-              <td>{{i.status_questionario}}</td>
+              <td>{{candidato.status_questionario}}</td>
               <td>NaN</td>
             </tr>
             {% endfor %}

@@ -26,11 +26,17 @@ def candidatos_empresa(request):
     candidatos = Candidato.objects.all()
     return render(request, 'candidatos_empresa.html', {'candidatos': candidatos})
 
+def gerenciar_funcionario(request, funcionario_id):
+    funcionario = Funcionario.objects.get(id=funcionario_id)
+    return render(request, 'gerenciar_funcionario.html', {'funcionario': funcionario})
+
+def gerenciar_candidato(request, candidato_id):
+    candidato = Candidato.objects.get(id=candidato_id)
+    return render(request, 'gerenciar_candidato.html', {'candidato': candidato})
 def relatorios_empresa(request):
     return render(request, 'relatorios_empresa.html')
 
 def dashboard_empresa(request):
-
     pass
 
 def config_empresa(request):
@@ -49,8 +55,6 @@ def home_funcionario(request):
     else:
         return redirect('/auth/login_funcionario/?status=2')
 
-def config_funcionario(request):
-    pass
 
 def home_candidato(request):
     if request.session.get('candidato'):
@@ -63,6 +67,3 @@ def home_candidato(request):
 
     else:
         return redirect('/auth/login_candidato/?status=2')
-
-def config_candidato(request):
-    pass

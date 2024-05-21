@@ -10,6 +10,8 @@ urlpatterns = [
     path('candidatos_empresa/', views.candidatos_empresa, name='candidatos_empresa'),
     path('relatorios_empresa/', views.relatorios_empresa, name='relatorios_empresa'),
     path('config_empresa/', views.config_empresa, name='config_empresa'),
+    path('gerenciar_funcionario/<int:funcionario_id>', views.gerenciar_funcionario, name='gerenciar_funcionario'),
+    path('gerenciar_candidato/<int:candidato_id>', views.gerenciar_candidato, name='gerenciar_candidato'),
     # path('chamar_logout_empresa', views_empresa.logout_empresa, name='chamar_logout_empresa'),
 
     # Funcionário

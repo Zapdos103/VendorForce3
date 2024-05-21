@@ -1,4 +1,5 @@
 from django.db import models
+from empresas.models import Candidato, Funcionario
 import uuid
 import random
 
@@ -32,7 +33,7 @@ class Formulario(BaseModel):
             })
         return data
 
-class Categoria(BaseModel):
+class Categoria(BaseModel): # depois trocar para models.Model (exclua o banco de dados)
     nome = models.CharField(max_length=50)
 
     def __str__(self):
@@ -67,3 +68,13 @@ class Resposta(BaseModel):
 
     def __str__(self):
         return str(self.nome)
+
+class Resultado(models.Model):
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE, null=True, blank=True)
+    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, null=True, blank=True)
+    resultado = models.FileField(upload_to="resultados", null=True, blank=True)
+    pontuacao = models.FloatField()
+
+    def __str__(self):
+        return str(self.pk)
+

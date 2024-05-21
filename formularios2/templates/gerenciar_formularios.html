@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'head' %} {% endblock %}
+
+{% block 'title' %} Gerenciar Formulários {% endblock %}
+
+{% block 'navbar' %} {% endblock %}
+
+{% block 'body' %}
+
+<h3>Gerenciar Formulários</h3>
+<br>
+<div class="container">
+    <div class="card-view">
+        <table class="table table-striped">
+            <tr>
+                <th>Nome</th>
+                <th>Duração</th>
+                <th>uid</th>
+            </tr>
+            {% for formulario in formularios %}
+                <tr class="linha_tabela">
+                    <th><a href="/formularios2/formulario/?formulario={{ formulario.nome|urlencode }}">{{formulario.nome}}</a></th>
+                    <th>{{formulario.tempo}} minutos</th>
+                    <th>{{formulario.uid}}</th>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -10,4 +10,4 @@ urlpatterns = [
     path('painel/', include('painel.urls')),
     path('formularios2/', include('formularios2.urls')),
     path('', lambda request: redirect('/auth/cadastro_completo')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
