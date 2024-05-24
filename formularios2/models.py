@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from empresas.models import Candidato, Funcionario
 import uuid
 import random
@@ -16,7 +18,6 @@ class Formulario(BaseModel):
     nome = models.CharField(max_length=100)
     topico = models.CharField(max_length=100)
     qtd_perguntas = models.IntegerField()
-    qtd_acertos = models.IntegerField(help_text='Pontuação realizada pelo usuário')
     tempo = models.IntegerField(help_text='Duração do teste em minutos')
     texto = models.CharField(max_length=300)
 
@@ -70,11 +71,19 @@ class Resposta(BaseModel):
         return str(self.nome)
 
 class Resultado(models.Model):
-    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE, null=True, blank=True)
-    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, null=True, blank=True)
-    resultado = models.FileField(upload_to="resultados", null=True, blank=True)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE)
+    formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
     pontuacao = models.FloatField()
+    frase = models.CharField(max_length=500)
 
     def __str__(self):
         return str(self.pk)
 
+    def gerar_pdf(self):
+        pass
+@receiver(post_delete, sender=Resultado)
+def update_status_questionario(sender, instance, **kwargs):
+    funcionario = instance.funcionario
+    if funcionario.status_questionario > 0:
+        funcionario.status_questionario -= 1
+        funcionario.save()

@@ -13,21 +13,42 @@
 <h3>Gerenciar Formulários</h3>
 <br>
 <div class="container">
+    {% if status == '1' %}
+        <div class="alert alert-danger" role="alert">
+            Você não tem permissão para acessar esta página.
+        </div>
+    {% endif %}
+    {% if status == '2' %}
+        <div class="alert alert-warning" role="alert">
+            Você precisa concluir todos os formulários para visualizar o seu resultado.
+        </div>
+    {% endif %}
+
     <div class="card-view">
         <table class="table table-striped">
             <tr>
                 <th>Nome</th>
                 <th>Duração</th>
-                <th>uid</th>
+                <th>Tópico</th>
+                <th>Número de Questões</th>
+                <th>Status</th>
             </tr>
             {% for formulario in formularios %}
                 <tr class="linha_tabela">
                     <th><a href="/formularios2/formulario/?formulario={{ formulario.nome|urlencode }}">{{formulario.nome}}</a></th>
                     <th>{{formulario.tempo}} minutos</th>
-                    <th>{{formulario.uid}}</th>
+                    <th>{{formulario.topico}}</th>
+                    <th>{{formulario.qtd_perguntas}}</th>
+                    <th></th>
                 </tr>
             {% endfor %}
         </table>
+        <br>
+        {% if funcionario != False %}
+            {% if funcionario.verificar_status %}
+                    <a href="{% url 'resultado/{{funcionario.id}}'%}">Ver Resultado</a>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}

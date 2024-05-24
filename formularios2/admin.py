@@ -1,14 +1,21 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(Formulario)
+class QuestaoFormulario(admin.StackedInline):
+    model = Questao
 
-class RespostaAdmin(admin.StackedInline):
+class FormularioAdmin(admin.ModelAdmin):
+    inlines = [QuestaoFormulario]
+
+admin.site.register(Formulario, FormularioAdmin)
+
+class RespostaQuestao(admin.StackedInline):
     model = Resposta
 
 class QuestaoAdmin(admin.ModelAdmin):
-    inlines = [RespostaAdmin]
+    inlines = [RespostaQuestao]
 
 admin.site.register(Categoria)
 admin.site.register(Questao, QuestaoAdmin)
 admin.site.register(Resposta)
+admin.site.register(Resultado)

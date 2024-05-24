@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from .models import Candidato, Empresa, Funcionario
-from painel.models import Status
 from django.contrib.auth.models import User
 import re
 from hashlib import sha256
@@ -13,7 +12,6 @@ import logging
 def cadastro_landing(request):
     if request.session.get('empresa'):
         return redirect('/painel/home_empresa')
-
     else:
         if request.method == 'GET':
             contexto = {'exibir_navbar': True,
@@ -23,6 +21,7 @@ def cadastro_landing(request):
             return render(request, 'cadastro_landing.html', contexto)
 
         elif request.method == 'POST':
+            request.session.flush()
             razao_social = request.POST.get('razao_social')
             nome = request.POST.get('nome')
             cargo = request.POST.get('cargo')
@@ -35,7 +34,6 @@ def cadastro_landing(request):
             repetir_senha = request.POST.get('repetir_senha')
 
             # Validações do cadastro landing.
-
             def já_registrado():
                 email2 = Empresa.objects.filter(email=email).first()
                 telefone2 = Empresa.objects.filter(telefone=telefone).first()
@@ -72,7 +70,6 @@ def cadastro_landing(request):
                 return resultado_validação
 
             # ... Outras validações ...
-
             # Salvar a empresa no banco de dados
             try:
                 empresa = Empresa(
@@ -85,20 +82,14 @@ def cadastro_landing(request):
                     segmento=segmento,
                     qtd_vendedores=qtd_vendedores,
                     senha=senha,
-
                 )
-
                 # Empresa cadastrada com sucesso
                 empresa.save()
-
             except Exception as e:
                 # Erro inesperado
                 print(f'Erro ao salvar a empresa: {str(e)}')
                 return redirect('/auth/cadastro_landing/?status=11')
-
             return redirect('/auth/cadastro_landing/?status=0')
-
-
 
 def cadastro_completo(request):
     if request.method == 'GET':
@@ -107,6 +98,7 @@ def cadastro_completo(request):
         return render(request, 'cadastro_landing.html', contexto)
 
     #elif request.method == 'POST':
+        # request.session.flush()
         #razao_social = request.POST.get('razao_social')
         #endereco = reques.POST.get('endereco')
         #CEP =
@@ -131,7 +123,6 @@ def cadastro_funcionario(request):
                     'contexto_app:': 'auth',
                     'status': request.GET.get('status')}
         return render(request, 'cadastro_funcionario.html', contexto)
-
     elif request.method == 'POST':
         # Primeiro verificamos se a empresa está logada; se sim -> tentar salvar os dados; se não -> exibir status
         if request.session.get('empresa'):
@@ -148,48 +139,35 @@ def cadastro_funcionario(request):
                     senha=funcionario1.senha,
                     funcao=funcionario1.funcao,
                     telefone=funcionario1.telefone,
-                    status_questionario=funcionario1.status_questionario,
                 )
-
                 funcionario2.save()
-
                 # Funcionário cadastrado com sucesso
                 return redirect('/auth/cadastro_funcionario/?status=0')
-
             except Candidato.DoesNotExist:
                 # Lidar com o caso em que o candidato não é encontrado
                 return redirect('/auth/cadastro_funcionario/?status=3')
-
             except Exception as e:
                 # Erro inesperado
                 print(f'Erro ao salvar o funcionário: {str(e)}')
                 return redirect('/auth/cadastro_funcionario/?status=1')
-
         # Caso o usuário não esteja logado em nenhuma empresa
         return redirect('/auth/cadastro_funcionario/?status=2')
 
 def cadastro_candidato(request):
-    if request.session.get('empresa'):
-        return redirect('/painel/home_empresa')
-
-    else:
         if request.method == 'GET':
             contexto = {'exibir_navbar': True,
                         'contexto_app:': 'auth',
                         'status': request.GET.get('status')}
-
             return render(request, 'cadastro_candidato.html', contexto)
-
         elif request.method == 'POST':
+            request.session.flush()
             nome_completo = request.POST.get('nome_completo')
             email = request.POST.get('email')
             senha = request.POST.get('senha')
             funcao = request.POST.get('funcao')
             telefone = request.POST.get('telefone')
-            status_pendente, _ = Status.objects.get_or_create(nome='Pedente')
 
             # Validações do cadastro de candidatos
-
             def já_registrado():
                 email2 = Candidato.objects.filter(email=email).first()
                 telefone2 = Candidato.objects.filter(telefone=telefone).first()
@@ -224,7 +202,6 @@ def cadastro_candidato(request):
                 return resultado_validação
 
             # ... Outras Validações ...
-
             # Salvar o candidato no banco de dados
             try:
                 candidato = Candidato(
@@ -233,117 +210,87 @@ def cadastro_candidato(request):
                     senha=senha,
                     funcao=funcao,
                     telefone=''.join(filter(str.isdigit, telefone)),
-                    status_questionario=status_pendente,
                 )
-
                 candidato.save()
-
                 # Canditato cadastrado com sucesso
                 return redirect('/auth/cadastro_candidato/?status=0')
-
             except Exception as e:
                 # Erro inesperado
                 print(f'Erro ao salvar o candidato: {str(e)}')
                 return redirect('/auth/cadastro_candidato/?status=4')
 
 def login_empresa(request):
-    if request.session.get('empresa'):
-        return redirect('/painel/home_empresa')
-
     if request.method == 'GET':
         contexto = {'exibir_navbar': True,
                     'contexto_app:': 'auth',
                     'status': request.GET.get('status')}
         return render(request, 'login_empresa.html', contexto)
-
     elif request.method == 'POST':
+        request.session.flush()
         email = request.POST.get('email')
         senha = request.POST.get('senha')
-
         # senha = sha256(senha.encode()).hexdigest()
         # empresa = Empresa.objects.get(email=email, senha=senha)
-
         try:
             empresa = Empresa.objects.filter(email=email).filter(senha=senha)
-
             if len(empresa) > 0:
                 # Login bem-sucedido, a empresa foi encontrada
-                request.session['empresa'] = empresa[0].id
+                request.session['empresa'] = empresa[0].id # <-- Aqui é definida a session 'empresa'
                 return redirect('/painel/home_empresa')
-
             elif len(empresa) == 0:
                 # Email ou Senha incorretos
                 return redirect('/auth/login_empresa/?status=1')
-
         except ObjectDoesNotExist:
             # Erro inesperado
             return redirect('/auth/login_empresa/?status=2')
 
 def login_funcionario(request):
-    if request.session.get('funcionario'):
-        return redirect('/painel/home_funcionario')
-
     if request.method == 'GET':
-        request.session.flush()
         contexto = {'exibir_navbar': True,
                     'contexto_app:': 'auth',
                     'status': request.GET.get('status')}
         return render(request, 'login_funcionario.html', contexto)
-
     elif request.method == 'POST':
+        request.session.flush()
         email = request.POST.get('email')
         senha = request.POST.get('senha')
-
         #senha = sha256(senha.encode()).hexdigest()
-
         try:
             funcionario = Funcionario.objects.filter(email=email).filter(senha=senha)
-
-
             if len(funcionario) > 0:
                 # Login bem-sucedido, o funcionário foi encontrado
-                request.session['funcionario'] = funcionario[0].id
-                return redirect('/painel/home_funcionario')
-
+                request.session['funcionario'] = funcionario[0].id # <-- Aqui é definida a session 'funcionário'
+                return redirect('/painel/home_usuario')
             elif len(funcionario) == 0:
                 # Email ou Senha incorretos
                 return redirect('/auth/login_funcionario/?status=1')
-
         except ObjectDoesNotExist:
             # Erro inesperado
             return redirect('/auth/login_funcionario/?status=2')
 
 def login_candidato(request):
-    if request.session.get('candidato'):
-        return redirect('/painel/home_candidato')
-
     if request.method == 'GET':
         request.session.flush()
         contexto = {'exibir_navbar': True,
                     'contexto_app:': 'auth',
                     'status': request.GET.get('status')}
         return render(request, 'login_candidato.html', contexto)
-
     elif request.method == 'POST':
+        request.session.flush()
         email = request.POST.get('email')
         senha = request.POST.get('senha')
-
         try:
             candidato = Candidato.objects.filter(email=email).filter(senha=senha)
-
             if len(candidato) > 0:
                 # Login bem-sucedido, o candidato foi encontrado
-                request.session['candidato'] = candidato[0].id
-                return redirect('/painel/home_candidato')
-
+                request.session['candidato'] = candidato[0].id # <-- Aqui é definida a session 'candidato'
+                return redirect('/painel/home_usuario')
             elif len(candidato) == 0:
                 # Email ou Senha incorretos
                 return redirect('/auth/login_candidato/?status=1')
-
         except ObjectDoesNotExist:
             # Erro inesperado
             return redirect('/auth/login_candidato/?status=2')
-
 
 def logout_empresa(request):
     request.session.flush()

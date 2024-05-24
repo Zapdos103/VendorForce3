@@ -1,8 +1,7 @@
 
-
 from django.db import models
-from painel.models import Status
-
+import datetime
+from datetime import timedelta
 
 # Create your models here.
 
@@ -78,12 +77,17 @@ class Funcionario(models.Model):
     senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10, blank=False)
     telefone = models.CharField(max_length=11, blank=False)
-    status_questionario = models.ForeignKey(Status, on_delete=models.DO_NOTHING, default=1)
-    # envio_questionario
-
+    # data de nascimento
+    # formacao academica
+    status_questionario = models.IntegerField(default=0)
 
     def __str__(self):
         return self.email
+
+    @property
+    def verificar_status(self, *args, **kwargs):
+        # TO-DO: malear de acordo com o número de formulários
+        return True if self.status_questionario == 6 else False
 
 class Candidato(models.Model):
     nome = models.CharField(max_length=100)
@@ -91,7 +95,13 @@ class Candidato(models.Model):
     senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10)
     telefone = models.CharField(max_length=11)
-    status_questionario = models.ForeignKey(Status, on_delete=models.DO_NOTHING, default=1)
+    # data de nascimento
+    # formacao academica
+    status_questionario = models.IntegerField(default=0)
 
     def __str__(self):
         return self.email
+
+    @property
+    def verificar_status(self):
+        pass

@@ -13,13 +13,16 @@
         <div class="col-md-6 mx-auto">
             <div class="row">
                 <div class="col">
-                    <h1> nome_do_formulario </h1>
+                    <h1> {{instancias.nome}} </h1>
                 </div>
                 <div class="col text-right" id="timer-box">
                     <b v-text="timerText"></b>
                 </div>
+                <div class="row">
+                    <p>{{instancias.texto}}</p>
+                </div>
             </div>
-            <form method="POST" action="{% url 'resultado2' %}"> {% csrf_token %}
+
                 <div v-for="q in questoes">
                 <hr>
                 <p>[[q.nome]]</p>
@@ -32,7 +35,7 @@
 
                 </div>
                 <input class="btn btn-primary" type="submit" value="Enviar" @click.prevent="enviarRespostas">
-            </form>
+
         </div>
     </div>
 </div>
@@ -75,6 +78,8 @@
         data() {
             return {
                 formulario: "{{ formulario|safe }}",
+                porcentagem_acerto: 0,
+                frase: '',
                 questoes: [],
                 respostasMarcadas: [],
                 timerText: '',
@@ -104,11 +109,11 @@
                     let respostaSelecionada = questao.respostas.find(r => r.resposta === event.target.value);
                     console.log(respostaSelecionada)
                     if (respostaSelecionada) {
-                        // Adicione a resposta marcada à lista respostasMarcadas
                         this.respostasMarcadas.push({
                             texto_da_resposta: respostaSelecionada.resposta,
                             resposta_correta: respostaSelecionada.resposta_correta,
-                            formulario_da_resposta: questao.formulario
+                            formulario_da_resposta: questao.formulario,
+                            uid_formulario:questao.uid_formulario
                         });
                         console.log('respostasMarcadas:', this.respostasMarcadas)
                     }
@@ -118,18 +123,17 @@
                 ativarTimer(this.tempo);
             },
             enviarRespostas() {
-                // Enviar respostasMarcadas para a view Django
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                fetch(`{% url 'resultado2' %}`, {
+                fetch(`{% url 'coletar_respostas' %}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
                         },
                         body: JSON.stringify({ respostasMarcadas: this.respostasMarcadas }),
                     })
                     .then(response => response.json())
-                    .then(json => console.log(json))
+                    .then(data => {
+                    window.location.href = "{% url 'gerenciar_formularios' %}";
+                    })
                     .catch(error => {
                         console.error('Erro ao enviar respostas:', error);
                     });

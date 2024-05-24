@@ -1,41 +1,60 @@
 from django.shortcuts import render, redirect
 from django.http.response import HttpResponse, JsonResponse
 from .models import *
-from empresas.models import Candidato, Funcionario
+from empresas.models import Candidato, Funcionario, Empresa
 import random
 from django.http import HttpResponse, FileResponse
-#from weasyprint import HTML
-# import tempfile
-from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 """Segunda tentativa de criar os invenários"""
 
-def home(request):
-    contexto = {
-                'formularios': Formulario.objects.all(),
-                'exibir_navbar': True,
-                'contexto_app': 'formularios2'}
-    if request.GET.get('formulario'):
-        return redirect(f'/formularios2/formulario/?formulario={request.GET.get("formulario")}')
-
-    return render(request, 'home.html', contexto)
+def gerenciar_formularios(request):
+    # print(request.session.keys())
+    if not (request.session.get('funcionario') or request.session.get('empresa')):
+        return redirect('/formularios2/gerenciar_formularios/?status=1')
+    try:
+        funcionario = Funcionario.objects.get(id=request.session['funcionario'])
+    except:
+        funcionario = False
+    exibir_navbar = True,
+    formularios = Formulario.objects.all()
+    return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'formularios': formularios, 'funcionario': funcionario})
 
 def formulario(request):
-    # formulario = Formulario.objects.get(id=formulario_id)
-    # nome_formulario = formulario.nome
+    if not (request.session.get('funcionario') or request.session.get('empresa')):
+        return HttpResponse('Faça seu login.')
+
+    formulario = request.GET.get('formulario')
+    instancias = Formulario.objects.get(nome=formulario)
+    formularios = Formulario.objects.all()
+    nomes = [nome.nome for nome in formularios]
+    # Verificar se o nome do formulário existe
+    if formulario not in nomes:
+        return HttpResponse(f'formulário "{formulario}" não encontrado.')
     contexto = {'categoria': request.GET.get('categoria'),
-                'formulario': request.GET.get('formulario'),
+                'formulario': formulario,
+                'instancias': instancias,
                 'exibir_navbar': True,
                 'contexto_app': 'formularios2'}
-
-    return render(request, 'formulario.html', contexto)
+    # TO-DO: validacao apenas 1 vez!
+    try:
+        funcionario = request.session.get('funcionario')
+        # lista dos resultados do funcionário em questão
+        resultados = Resultado.objects.filter(funcionario=funcionario)
+        # Vamos verificar se o formulário já foi realizado pelo usuário
+        for resultado in resultados:
+            if resultado.formulario.nome == formulario:
+                # Formulário já realizado, redirecionando o usuário para o menu de formulários
+                return redirect('/formularios2/gerenciar_formularios/?status=2')
+        return render(request, 'formulario.html', contexto)
+    except:
+        return render(request, 'formulario.html', contexto)
 
 def get_formulario(request):
     try:
         questoes = Questao.objects.all()
-        # formularios = Formulario.objects.all()
         if request.GET.get('formulario'):
-            print(request.GET.get('formulario'))
             questoes = questoes.filter(formulario__nome__icontains=request.GET.get("formulario"))
         questoes = list(questoes)
         data = []
@@ -46,119 +65,89 @@ def get_formulario(request):
                 'uid': q.uid,
                 'nome': q.nome,
                 'formulario': q.formulario.nome,
+                'uid_formulario': q.formulario.uid,
                 'tempo': q.formulario.tempo,
                 'categoria': q.categoria.nome,
                 'qtd_respostas': q.qtd_respostas,
                 'respostas': q.get_respostas(),
             })
         payload = {'status': True, 'data': data}
-
         return JsonResponse(payload)
-
     except Exception as e:
         print(e)
-
     return HttpResponse('Erro inesperado.')
 
-def gerenciar_formularios(request):
-    exibir_navbar = True
-    formularios = Formulario.objects.all()
-    print(formularios)
-    return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'formularios': formularios})
-def resultado(request):
-    contexto = {'exibir_navbar': False,
-                'contexto_app': 'formularios2'}
-
-    # Aplicar essa lógica ao formulario depois
-    if not (request.session.get('candidato') or request.session.get('funcionario')):
-        return HttpResponse('Faça seu Login.')
-
-    if request.session.get('candidato'):
-        candidato = Candidato.objects.get(id=request.session['candidato'])
-    if request.session.get('funcionario'):
-        funcionario = Funcionario.objects.get(id=request.session['funcionario'])
-
-    if request.method == 'GET':
-        return render(request, 'formulario.html')
-
-    elif request.method == 'POST':
-        # Recuperar as respostas enviadas pelo usuário
-        respostas_ids = request.POST.getlist('respostas')
-        respostas = Resposta.objects.filter(pk__in=respostas_ids)
-        # Calcular a porcentagem de acerto por categoria
-        porcentagens = {}
-
-        for resposta_id in respostas:
-            resposta = Resposta.objects.get(pk=resposta_id)
-            nome_categoria = resposta.questao.categoria.nome
-            if nome_categoria not in porcentagens:
-                porcentagens[nome_categoria] = {'total': 0, 'corretas': 0}
-            porcentagens[nome_categoria]['total'] += 1
-            if resposta.resposta_correta:
-                porcentagens[nome_categoria]['corretas'] += 1
-
-        resultados = {}
-
-        for nome_categoria, dados in porcentagens.items():
-            if dados > 0:
-                porcentagem_acerto = (dados['corretas']/dados['total'])*100
-            else:
-                porcentagem_acerto = 0
-
-            if porcentagem_acerto <= 20:
-                frase = 'frase 1'
-            elif porcentagem_acerto <= 40:
-                frase = 'frase 2'
-            elif porcentagem_acerto <= 60:
-                frase = 'frase 3'
-            elif porcentagem_acerto <= 80:
-                frase = 'frase 4'
-            else:
-                frase = 'frase 5'
-            resultados[nome_categoria] = {'porcentagem_acerto': porcentagem_acerto,
-                                              'frase': frase}
-        categorias = ['Estilos de Vendas', 'Locus de Controle', 'Atitudes Profissionais', 'Técnicas de Vendas', 'Negociação', 'Matemática Básica']
-        print(resultados)
-        print(respostas_ids)
-        # Renderização
-        return render(request, 'resultado.html', {'resultados': resultados}) # passar o usuário
-
-def resultado2(request):
+@csrf_exempt
+def coletar_respostas(request):
     # Tratamento das respostas
-    pontuacao = 0
-    resultado = 0
-    if request.session.get('candidato'):
-            candidato = Candidato.objects.get(id=request.session['candidato'])
-            funcionario = None
-    elif request.session.get('funcionario'):
-            funcionario = Funcionario.objects.get(id=request.session['funcionario'])
-            candidato = None
-    else:
-        funcionario = None
-        candidato = None
+    if not (request.session.get('funcionario') or request.session.get('empresa')):
+        return HttpResponse('Faça seu login.')
     if request.method == 'GET':
         return render(request, 'formulario.html')
-
     elif request.method == 'POST':
+        try:
+            respostasMarcadas = json.loads(request.body.decode())
+            print (respostasMarcadas)
 
-        respostasMarcadas = request.POST.get('respostasMarcadas') # <-- coletando as respostas do html do formulario
+            nome_formulario = respostasMarcadas['respostasMarcadas'][0]['formulario_da_resposta']
+            uid_formulario = respostasMarcadas['respostasMarcadas'][0]['uid_formulario']
+            acerto = 0
+            erro = 0
+            for resposta in respostasMarcadas['respostasMarcadas']:
+                if resposta['resposta_correta']:
+                    acerto += 1
+                else:
+                    erro += 1
+            porcentagem_acerto = (acerto/(acerto + erro))*100
+            print(f'Porcentagem de acerto de {nome_formulario}:', porcentagem_acerto)
+            frase = 'texto'
 
-        """
-        Aqui ficara todo o traramento dos resultados que o usuario obteve apos enviar o formulario
-        """
-        # Renderizar a página resultado_pdf.html como string
-        #html_string = render_to_string('resultado_pdf.html', {'respostasMarcadas': respostasMarcadas})
-        #pdf = HTML(string=html_string).write_pdf()
+            try:
+                funcionario = Funcionario.objects.get(id=request.session['funcionario'])
+                resultado = Resultado(funcionario = funcionario,
+                                  formulario = Formulario.objects.get(uid=uid_formulario),
+                                  pontuacao = porcentagem_acerto,
+                                  frase = frase)
+                resultado.save()
+                funcionario.status_questionario += 1
+                funcionario.save()
 
-        resultado = Resultado(
-            candidato=candidato,
-            funcionario=funcionario,
-            pontuacao=pontuacao,
-            #resultado=pdf,
-        )
-        resultado.save()
-        return render(request, 'resultado.html', {'respostasMarcadas': respostasMarcadas})
+            except:
+                pass
+            return HttpResponse(json.dumps({'status': 1}))
+        except Exception as e:
+            return JsonResponse({'erro': str(e)}, status=500)
+def resultado(request, funcionario_id):
+    funcionario = Funcionario.objects.get(id=funcionario_id)
 
-def resultado_pdf(request, resultado_id):
+    # Verifica se o usuário tem permissão para visualizar a página
+    if not (request.session.get('funcionario') or request.session.get('empresa')):
+        return HttpResponse('Você não tem permissão para visualizar esta página.')
+    # Verifica permissão para a empresa
+    if request.session.get('empresa') and funcionario.empresa.id != request.session['empresa']:
+        return HttpResponse('Você não tem permissão para visualizar esta página.')
+    # Verifica permissão para o funcionário
+    if request.session.get('funcionario') and funcionario_id != request.session['funcionario']:
+        return HttpResponse('Você não tem permissão para visualizar esta página.')
+    # Verifica se o funcionário concluiu todos os formulários
+    if not funcionario.verificar_status:
+        return redirect('/formularios2/gerenciar_formularios/?status=2')
+    resultados = Resultado.objects.filter(funcionario=funcionario)
+    pontuacao = {}
+    frases = {}
+    # Trabalhar a pontuacao
+    for resultado in resultados:
+        pontuacao[resultado.nome] = resultado.pontuacao
+        frases[resultado.nome] = resultado.frase
+    print(pontuacao)
 
-    return render(request, 'resultado_pdf.html')
+    contexto = {'nome': funcionario.nome,
+                    'idade': None,
+                    'data': None,
+                    'formacao': None,
+                    'resultados': resultados,
+                    'pontuacao': pontuacao,
+                    'frases': frases
+                    }
+
+    return render(request, 'resultado.html', contexto)

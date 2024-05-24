@@ -1,35 +1,49 @@
-<!-- resultados.html -->
 
 {% extends 'base.html' %}
 
-{% block 'title' %} Resultados {% endblock %}
+{% block 'title' %} Resultado {% endblock %}
 
 {% block 'body' %}
 
-<h1>Resultados</h1>
+<div id="app">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6"><h1>Assessment Vendor Force</h1></div>
+            <div class="col-md-6 text-right"><img src="{% static 'resultado/img/vendorforce_resultado.png' %}"></div>
+        </div>
+        <div>
+            <p>Nome: {{nome}}</p>
+            <p>Idade: {{idade}}</p>
+            <p>Data de preenchimento:{{data de preenchimento}}</p>
+            <br>
+            <p>Formação Academica - {{}}</p>
+            <br>
+            <p>O programa de Assessment Vendor Force, tem como principal finalidade oferecer aos candidatos e seus gestores informações estruturadas sobre sua habilidades e e competências estruturadas em três fatores chaves: </p>
+            <p>Habilidades de Vendas Intrínsecas de Personalidade:</p>
+            <p>Estilo Alternativo de Vendas – tem como foco avaliar se os candidatos possuem um estilo Hunter ou Farmer em vendas </p>
+            <p>Locus de controle Interno – Avalia se os candidatos, possuem crenças estruturantes que lhes permitem associar seus resultados positivos ou negativos as suas atitudes.</p>
+            <p>Atitude Profissional – Avalia o nível de otimismo e resiliência ao processos de vendas. </p>
+            <br>
+            <p>Habilidades Técnicas de Vendas </p>
+            <p>    Técnica de vendas – avalia a habilidade e domínio das técnicas dos candidatos em relação aos processos de abertura, conexão e qualificação dos leads e prospects </p>
+            <p>    Negociação – avalia as habilidades e domínio das técnicas dos candidatos em superar objeções e agregar maior valor as negociações, garantindo a retenção de carteiras e aumento da margem. </p>
+        </div>
+    </div>
+    <br>
+    <div>
+        <img src="{% static 'resultado/img/resultado_radar.png'%}">
+    </div>
+    <br>
+    <div>
+        <p>*Barras das pontuacoes </p>
+        <br>
+        <h3>Análise Descritiva Resumida </h3>
+        <br>
+        <p>A análise descritiva trabalha com cruzamento de habilidades intrinsicas da personalidade e das habilidade técnicas em vendas para identificar comportamentos importantes para o desempenho da sua atividade profissional. </p>
+        <p>Aqui vao as frases</p>
+    </div>
 
-{% if respostasMarcadas %}
-    <ul>
-        {% for resposta in respostasMarcadas %}
-            <li>{{ resposta }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Nenhuma resposta marcada.</p>
-{% endif %}
-
-
-<br>
-<form action="" method="POST">
-    <input type="FILE" value="Alterar PDF" class="btn btn-primary" name="resultado">
-</form>
-<br>
-<br>
-<a style="width: 100%" href="#" target="__blank"></a>
-
-<hr>
-Exibição dos dados
-<!-- exibicao dos dados com graficos e etc (o pdf deve ser semelhante a exibicao dos dados desta pagina) -->
+</div>
 
 
 
