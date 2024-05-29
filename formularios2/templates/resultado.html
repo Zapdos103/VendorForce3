@@ -1,22 +1,29 @@
 
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block 'title' %} Resultado {% endblock %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="{% static 'resultado/css/css.css' %}">
+{% endblock %}
+
 
 {% block 'body' %}
 
 <div id="app">
     <div class="container">
         <div class="row">
-            <div class="col-md-6"><h1>Assessment Vendor Force</h1></div>
+            <div class="col-md-6"><h1 class="titulo">Assessment Vendor Force</h1></div>
             <div class="col-md-6 text-right"><img src="{% static 'resultado/img/vendorforce_resultado.png' %}"></div>
         </div>
         <div>
-            <p>Nome: {{nome}}</p>
+            <p>Nome: {{funcionario.nome}}</p>
             <p>Idade: {{idade}}</p>
-            <p>Data de preenchimento:{{data de preenchimento}}</p>
+            <p>Data de preenchimento:{{data}}</p>
             <br>
-            <p>Formação Academica - {{}}</p>
+            <p>Formação Academica - {{formacao}}</p>
             <br>
             <p>O programa de Assessment Vendor Force, tem como principal finalidade oferecer aos candidatos e seus gestores informações estruturadas sobre sua habilidades e e competências estruturadas em três fatores chaves: </p>
             <p>Habilidades de Vendas Intrínsecas de Personalidade:</p>
@@ -28,23 +35,37 @@
             <p>    Técnica de vendas – avalia a habilidade e domínio das técnicas dos candidatos em relação aos processos de abertura, conexão e qualificação dos leads e prospects </p>
             <p>    Negociação – avalia as habilidades e domínio das técnicas dos candidatos em superar objeções e agregar maior valor as negociações, garantindo a retenção de carteiras e aumento da margem. </p>
         </div>
-    </div>
-    <br>
-    <div>
-        <img src="{% static 'resultado/img/resultado_radar.png'%}">
-    </div>
-    <br>
-    <div>
-        <p>*Barras das pontuacoes </p>
-        <br>
-        <h3>Análise Descritiva Resumida </h3>
-        <br>
-        <p>A análise descritiva trabalha com cruzamento de habilidades intrinsicas da personalidade e das habilidade técnicas em vendas para identificar comportamentos importantes para o desempenho da sua atividade profissional. </p>
-        <p>Aqui vao as frases</p>
-    </div>
 
+        <div class="row">
+            <br>
+            <h5> Habilidades Técnicas e Personalidade em Vendas</h5>
+            <canvas id="grafico-radar" title="Habilidades Técnicas e Personalidade em Vendas"></canvas>
+            <!-- <img src="{% static 'resultado/img/resultado_radar.png'%}"> -->
+        </div>
+        <div>
+            <br>
+            {% for resultado in resultados %}
+                <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="height: 30px; color: #5b92b2;">
+                    <div class="progress-bar" style="width: {{resultado.pontuacao}}%"><strong>{{resultado.formulario}} - {{resultado.pontuacao}}%</strong></div>
+                </div>
+                <br>
+            {% endfor %}
+            <br>
+            <h3>Análise Descritiva Resumida </h3>
+            <br>
+            <p>A análise descritiva trabalha com cruzamento de habilidades intrinsicas da personalidade e das habilidade técnicas em vendas para identificar comportamentos importantes para o desempenho da sua atividade profissional. </p>
+            <p>Aqui vao as frases</p>
+        </div>
+    </div>
 </div>
-
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'resultado/js/js.js' %}"></script>
+<script>
+        const url = "{% url 'coletar_resultado' funcionario.id %}";
+        window.onload = function(event){
+            renderiza_radar(url);
+        }
+</script>
 
 {% endblock %}
+</html>

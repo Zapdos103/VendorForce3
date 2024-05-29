@@ -6,25 +6,27 @@ import random
 from django.http import HttpResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from datetime import datetime
 
 """Segunda tentativa de criar os invenários"""
 
 def gerenciar_formularios(request):
     # print(request.session.keys())
+    exibir_navbar = True
+    formularios = Formulario.objects.all()
     if not (request.session.get('funcionario') or request.session.get('empresa')):
         return redirect('/formularios2/gerenciar_formularios/?status=1')
     try:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
+        print(funcionario.id)
+        return render(request, 'gerenciar_formularios.html',
+                      {'exibir_navbar': exibir_navbar, 'formularios': formularios, 'funcionario': funcionario})
     except:
-        funcionario = False
-    exibir_navbar = True,
-    formularios = Formulario.objects.all()
-    return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'formularios': formularios, 'funcionario': funcionario})
+        return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'formularios': formularios})
 
 def formulario(request):
     if not (request.session.get('funcionario') or request.session.get('empresa')):
         return HttpResponse('Faça seu login.')
-
     formulario = request.GET.get('formulario')
     instancias = Formulario.objects.get(nome=formulario)
     formularios = Formulario.objects.all()
@@ -106,20 +108,20 @@ def coletar_respostas(request):
                 funcionario = Funcionario.objects.get(id=request.session['funcionario'])
                 resultado = Resultado(funcionario = funcionario,
                                   formulario = Formulario.objects.get(uid=uid_formulario),
+                                  nome_formulario = nome_formulario,
                                   pontuacao = porcentagem_acerto,
                                   frase = frase)
                 resultado.save()
                 funcionario.status_questionario += 1
                 funcionario.save()
-
+                #funcionario.ultimo_envio = datetime.now()
             except:
                 pass
-            return HttpResponse(json.dumps({'status': 1}))
+            return HttpResponse(json.dumps({'status': 1, 'funcionario': bool(funcionario)}))
         except Exception as e:
             return JsonResponse({'erro': str(e)}, status=500)
 def resultado(request, funcionario_id):
     funcionario = Funcionario.objects.get(id=funcionario_id)
-
     # Verifica se o usuário tem permissão para visualizar a página
     if not (request.session.get('funcionario') or request.session.get('empresa')):
         return HttpResponse('Você não tem permissão para visualizar esta página.')
@@ -133,21 +135,29 @@ def resultado(request, funcionario_id):
     if not funcionario.verificar_status:
         return redirect('/formularios2/gerenciar_formularios/?status=2')
     resultados = Resultado.objects.filter(funcionario=funcionario)
-    pontuacao = {}
-    frases = {}
-    # Trabalhar a pontuacao
-    for resultado in resultados:
-        pontuacao[resultado.nome] = resultado.pontuacao
-        frases[resultado.nome] = resultado.frase
-    print(pontuacao)
-
-    contexto = {'nome': funcionario.nome,
-                    'idade': None,
-                    'data': None,
-                    'formacao': None,
-                    'resultados': resultados,
-                    'pontuacao': pontuacao,
-                    'frases': frases
-                    }
-
+    contexto = {'funcionario': {'id': funcionario.id, 'nome': funcionario.nome},
+                'idade': None,
+                'data': None,
+                'formacao': None,
+                'resultados': resultados,
+                }
     return render(request, 'resultado.html', contexto)
+
+def coletar_resultado(request, funcionario_id):
+    funcionario = Funcionario.objects.get(id=funcionario_id)
+    resultados = Resultado.objects.filter(funcionario=funcionario)
+    pontuacao = []
+    frases = []
+    labels = []
+    for resultado in resultados:
+        pontuacao.append(resultado.pontuacao)
+        frases.append(resultado.frase)
+        labels.append(resultado.nome_formulario)
+    data_json = {
+        'funcionario': {'id': funcionario.id, 'nome': funcionario.nome},
+        'resultados': list(zip(labels, pontuacao, frases)),
+        'pontuacao': pontuacao,
+        'frases': frases,
+        'labels': labels,
+    }
+    return JsonResponse(data_json)

@@ -6,14 +6,14 @@ from formularios2.models import Resultado
 from django.contrib.auth.models import User
 import re
 from empresas.views import logout_empresa, logout_funcionario, logout_candidato
-from datetime import time
+from datetime import datetime
 
 def home_empresa(request):
+    exibir_navbar = True
+    contexto_app = 'painel'
     if request.session.get('empresa'):
         empresa = Empresa.objects.get(id=request.session['empresa'])
         funcionarios = Funcionario.objects.filter(empresa=empresa)
-        exibir_navbar = True
-        contexto_app = 'painel'
         return render(request, 'home_empresa.html', {'empresa': empresa, 'funcionarios': funcionarios, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
     else:
         return redirect('/auth/login_empresa/?status=2')
@@ -28,12 +28,6 @@ def candidatos_empresa(request):
 def gerenciar_funcionario(request, funcionario_id): # <-- Inútil? sim -> criar uma unica view 'perfil'
     funcionario = Funcionario.objects.get(id=funcionario_id)
     return render(request, 'perfil_usuario.html', {'funcionario': funcionario})
-
-def relatorios(request): # <-- desnecessario? sim -> relatorios dentro do perfil
-    empresa = Empresa.objects.get(id=request.session['empresa'])
-    funcionarios = Funcionario.objects.filter(empresa=empresa)
-    relatorios = Resultado.objects.filter(funcionario__in=funcionarios)
-    return render(request, 'relatorios.html', {'empresa': empresa, 'funcionarios': funcionarios, relatorios: 'relatorios'})
 def gerenciar_candidato(request, candidato_id): # <-- Inútil? sim -> criar uma unica view 'perfil'
     candidato = Candidato.objects.get(id=candidato_id)
     return render(request, 'perfil_usuario.html', {'candidato': candidato})

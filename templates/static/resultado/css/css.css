@@ -1,0 +1,22 @@
+.titulo{
+    background-color: rgba(113, 144, 227);
+    color: white;
+    display: flex;
+    align-items: center;
+
+}
+
+#grafico-radar{
+    background-color: #0f243e;
+    width: 400px;
+    height: 150px;
+    border-radius: 15px;
+}
+
+#grafico-radar:hover{
+
+}
+
+.texto{
+
+}

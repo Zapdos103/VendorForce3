@@ -44,9 +44,10 @@
             {% endfor %}
         </table>
         <br>
-        {% if funcionario != False %}
+        {% if funcionario %}
+            <h1>teste</h1>
             {% if funcionario.verificar_status %}
-                    <a href="{% url 'resultado/{{funcionario.id}}'%}">Ver Resultado</a>
+                    <a href="{% url 'resultado/funcionario.id' %}">Ver Resultado</a>
             {% endif %}
         {% endif %}
     </div>

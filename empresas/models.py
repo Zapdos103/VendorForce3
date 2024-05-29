@@ -1,6 +1,7 @@
 
 from django.db import models
-import datetime
+from django.utils.safestring import mark_safe
+from datetime import datetime
 from datetime import timedelta
 
 # Create your models here.
@@ -70,6 +71,9 @@ class Empresa(models.Model):
     def __str__(self):
         return self.nome
 
+    def badge_template(self):
+        pass
+
 class Funcionario(models.Model):
     empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
     nome = models.CharField(max_length=100, blank=False)
@@ -77,17 +81,35 @@ class Funcionario(models.Model):
     senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10, blank=False)
     telefone = models.CharField(max_length=11, blank=False)
-    # data de nascimento
+    # nascimento = models.DateField()
     # formacao academica
     status_questionario = models.IntegerField(default=0)
+    # ultimo_envio = models.DateField(null=True)
+
 
     def __str__(self):
         return self.email
 
     @property
-    def verificar_status(self, *args, **kwargs):
+    def verificar_status(self):
         # TO-DO: malear de acordo com o número de formulários
         return True if self.status_questionario == 6 else False
+    @property
+    def idade(self):
+        # return timezone.now() - self.nascimento
+        pass
+
+    def badge_template(self):
+        if self.status_questionario == 6:
+            classes = 'success'
+            texto = 'Finalizado'
+        elif 0 < self.status_questionario < 6:
+            classes = 'warning'
+            texto = 'Em andamento'
+        else:
+            classes = 'secondary'
+            texto = 'Pedente'
+        return mark_safe(f'<span class="badge rounded-pill bg-{classes}">{texto}</span>')
 
 class Candidato(models.Model):
     nome = models.CharField(max_length=100)
@@ -95,13 +117,21 @@ class Candidato(models.Model):
     senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10)
     telefone = models.CharField(max_length=11)
-    # data de nascimento
+    # nascimento = models.DateField()
     # formacao academica
     status_questionario = models.IntegerField(default=0)
+    # ultimo_envio = models.DateField(null=True)
 
     def __str__(self):
         return self.email
 
     @property
     def verificar_status(self):
+        pass
+
+    @property
+    def idade(self):
+        pass
+
+    def badge_template(self):
         pass

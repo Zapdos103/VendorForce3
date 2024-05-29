@@ -3,17 +3,16 @@
 {% load static %}
 
 {% block 'head' %}
-
+<script src="{% static 'resultado/js/funcoes.js' %}"></script>
+<script src="{% static 'empresa/css/estilos.css' %}"></script>
 {% endblock %}
 
 {% block 'title' %}Painel Empresa{% endblock %}
 
-{% block script %} {% endblock %}
-
 {% block 'navbar' %} {% endblock %}
 
 {% block 'body' %}
-    <h1>Painel Empresa{{ empresa.nome }}</h1>
+    <h1>{{ empresa.nome }}</h1>
     <hr>
 
     <!-- Botoes do menu -->
@@ -56,9 +55,9 @@
               <th scope="col">Nome</th>
               <th scope="col">Email</th>
               <th scope="col">Telefone</th>
-              <th scope="col">Data de Envio</th>
+              <th scope="col">Ultimo Envio</th>
               <th scope="col">Status</th>
-              <th scope="col">Ações</th>
+              <th scope="col">Relatório</th>
             </tr>
         </thead>
         <tbody>
@@ -68,8 +67,17 @@
                   <td>{{ funcionario.email }}</td>
                   <td>{{ funcionario.telefone}} </td>
                   <td>NaN</td>
-                  <td>{{funcionario.status_questionario}}</td>
-                  <td>NaN</td>
+                  <td>
+                          {{funcionario.badge_template}}
+                  </td>
+                  <td>
+                      {% if funcionario.verificar_status %}
+                        <!-- TO-DO: colocar o link -->
+                        <a href="/formularios2/resultado/{{funcionario.id}}" class="btn btn-light">Abrir</a>
+                      {% else %}
+                        <a href="#" class="btn btn-light disabled">Abrir</a>
+                      {% endif %}
+                  </td>
                 </tr>
             {% endfor %}
         </tbody>

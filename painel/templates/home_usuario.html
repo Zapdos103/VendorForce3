@@ -1,1 +1,27 @@
-Home dos usuários
+
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'title' %} Home Usuário {% endblock %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="{% static 'empresas/css/estilos.css' %}">
+{% endblock %}
+
+{% block 'script' %}
+<!-- <script src="{% static 'empresas/js/js.js' %}"></script>-->
+{% endblock %}
+
+{% block 'body' %}
+<div class="container">
+    {% if status == '1' %}
+        <div class="alert alert-success" role="alert">
+            Formulário enviado com sucesso!
+        </div>
+    {% endif %}
+</div>
+
+<h3>Home Usuário</h3>
+
+{% endblock %}

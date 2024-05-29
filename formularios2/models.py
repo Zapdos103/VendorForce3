@@ -73,6 +73,7 @@ class Resposta(BaseModel):
 class Resultado(models.Model):
     funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE)
     formulario = models.ForeignKey(Formulario, on_delete=models.CASCADE)
+    nome_formulario = models.CharField(max_length=50)
     pontuacao = models.FloatField()
     frase = models.CharField(max_length=500)
 
