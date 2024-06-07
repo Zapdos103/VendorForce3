@@ -18,22 +18,22 @@ def home_empresa(request):
     else:
         return redirect('/auth/login_empresa/?status=2')
 
-def candidatos_empresa(request):
+def candidatos_empresa(request): # Desnecessário? sim -> home dinâmica
     empresa = Empresa.objects.get(id=request.session['empresa'])
     funcionarios = Funcionario.objects.filter(empresa=empresa)
     emails = [funcionario.email for funcionario in funcionarios]
     candidatos = Candidato.objects.all()
     return render(request, 'candidatos_empresa.html', {'empresa': empresa, 'funcionarios': funcionarios, 'emails': emails, 'candidatos': candidatos})
 
-def gerenciar_funcionario(request, funcionario_id): # <-- Inútil? sim -> criar uma unica view 'perfil'
+def gerenciar_funcionario(request, funcionario_id): # Desnecessário? sim -> gerenciar pela home
     funcionario = Funcionario.objects.get(id=funcionario_id)
     return render(request, 'perfil_usuario.html', {'funcionario': funcionario})
-def gerenciar_candidato(request, candidato_id): # <-- Inútil? sim -> criar uma unica view 'perfil'
+def gerenciar_candidato(request, candidato_id): # Desnecessário? sim -> gerenciar pela home
     candidato = Candidato.objects.get(id=candidato_id)
     return render(request, 'perfil_usuario.html', {'candidato': candidato})
 
 def dashboard_empresa(request):
-    pass
+    return render(request, 'dashboard_empresa.html')
 
 def config_empresa(request):
     return render(request, 'config_empresa.html')

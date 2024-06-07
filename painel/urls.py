@@ -10,7 +10,6 @@ urlpatterns = [
     path('config_empresa/', views.config_empresa, name='config_empresa'),
     path('gerenciar_funcionario/<int:funcionario_id>', views.gerenciar_funcionario, name='gerenciar_funcionario'),
     path('gerenciar_candidato/<int:candidato_id>', views.gerenciar_candidato, name='gerenciar_candidato'),
-
     # Usuário -> 1) Candidato / 2) Funcionário
     path('home_usuario/', views.home_usuario, name='home_usuario'),
     path('perfil/<int:usuario_id>', views.perfil, name='perfil'),

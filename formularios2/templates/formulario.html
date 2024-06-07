@@ -132,6 +132,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                    // TO-DO: separar entre funcionario e empresa
                     window.location.href = "{% url 'gerenciar_formularios' %}";
                     })
                     .catch(error => {

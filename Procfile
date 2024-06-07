@@ -1,0 +1,1 @@
+web: gunicorn: ProjetoEstagio2.wsgi -- log-file -
