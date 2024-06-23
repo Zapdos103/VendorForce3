@@ -16,7 +16,7 @@ def home_empresa(request):
         funcionarios = Funcionario.objects.filter(empresa=empresa)
         return render(request, 'home_empresa.html', {'empresa': empresa, 'funcionarios': funcionarios, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
     else:
-        return redirect('/auth/login_empresa/?status=2')
+        return redirect('/painel/login_empresa/?status=2')
 
 def candidatos_empresa(request): # Desnecessário? sim -> home dinâmica
     empresa = Empresa.objects.get(id=request.session['empresa'])

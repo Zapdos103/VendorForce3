@@ -15,7 +15,7 @@ def gerenciar_formularios(request):
     exibir_navbar = True
     formularios = Formulario.objects.all()
     if not (request.session.get('funcionario') or request.session.get('empresa')):
-        return redirect('/formularios2/gerenciar_formularios/?status=1')
+        return HttpResponse('Faça seu login.')
     try:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         print(funcionario.id)
