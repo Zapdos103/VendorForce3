@@ -106,6 +106,13 @@
                 let questao = this.questoes.find(q => q.uid === uid);
                 console.log(questao)
                 if (questao) {
+                    // Temos que excluir questao repetida anteriormente!
+                    for (let i = 0;i < this.respostasMarcadas.length;i++) {
+                        if (this.respostasMarcadas[i].uid_questao === questao.uid) {
+                            this.respostasMarcadas.splice(i, 1);
+                            break; // remove apenas a primeira ocorrência
+                        }
+                    }
                     let respostaSelecionada = questao.respostas.find(r => r.resposta === event.target.value);
                     console.log(respostaSelecionada)
                     if (respostaSelecionada) {
@@ -113,6 +120,7 @@
                             texto_da_resposta: respostaSelecionada.resposta,
                             resposta_correta: respostaSelecionada.resposta_correta,
                             formulario_da_resposta: questao.formulario,
+                            uid_questao: questao.uid,
                             uid_formulario:questao.uid_formulario
                         });
                         console.log('respostasMarcadas:', this.respostasMarcadas)

@@ -39,7 +39,6 @@ def formulario(request):
                 'instancias': instancias,
                 'exibir_navbar': True,
                 'contexto_app': 'formularios2'}
-    # TO-DO: validacao apenas 1 vez!
     try:
         funcionario = request.session.get('funcionario')
         # lista dos resultados do funcionário em questão
