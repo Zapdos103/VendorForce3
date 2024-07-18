@@ -1,5 +1,5 @@
 from django.db import models
-from empresas.models import Candidato, Funcionario
+from empresas.models import Candidato, Funcionario, Empresa
 import uuid
 import random
 
@@ -18,6 +18,7 @@ class Formulario(BaseModel):
     qtd_perguntas = models.IntegerField()
     tempo = models.IntegerField(help_text='Duração do teste em minutos')
     texto = models.CharField(max_length=300)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.nome)

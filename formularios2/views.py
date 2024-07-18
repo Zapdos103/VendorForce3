@@ -13,16 +13,27 @@ from datetime import datetime
 import tempfile
 
 config = pdfkit.configuration(wkhtmltopdf=r"C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+# TO-DO: transferir o executavel wkhtmltopdf para a VPS e mudar seu path
+# TO-DO: atualizar requirements.txt
+# TO-DO: atualizar atributos dos usuários
+# TO-DO: atribuir a opção de excluir um funcionario de uma empresa
 """Segunda tentativa de criar os invenários"""
 
 def gerenciar_formularios(request):
     # print(request.session.keys())
     exibir_navbar = True
-    formularios = Formulario.objects.all()
     if not (request.session.get('funcionario') or request.session.get('empresa')):
-        return HttpResponse('Faça seu login.')
-    try:
+        return HttpResponse('Você não tem permissão para acessar esta página.')
+
+    # Listar os formulários da empresa/(empresa do funcionario)
+    if request.session.get('empresa'):
+        empresa = Empresa.objects.get(id=request.session['empresa'])
+        formularios = Formulario.objects.filter(empresa=empresa)
+    else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
+        empresa = funcionario.empresa
+        formularios = Formulario.objects.filter(empresa=empresa)
+    try:
         print(funcionario.id)
         return render(request, 'gerenciar_formularios.html',
                       {'exibir_navbar': exibir_navbar, 'formularios': formularios, 'funcionario': funcionario})
@@ -34,7 +45,16 @@ def formulario(request):
         return HttpResponse('Faça seu login.')
     formulario = request.GET.get('formulario')
     instancias = Formulario.objects.get(nome=formulario)
-    formularios = Formulario.objects.all()
+
+    # Verificar se o formulário pertence a empresa/(empresa do funcionario)
+    if request.session.get('empresa'):
+        empresa = Empresa.objects.get(id=request.session['empresa'])
+        formularios = Formulario.objects.filter(empresa=empresa)
+    else:
+        funcionario = Funcionario.objects.get(id=request.session['funcionario'])
+        empresa = funcionario.empresa
+        formularios = Formulario.objects.filter(empresa=empresa)
+
     nomes = [nome.nome for nome in formularios]
     # Verificar se o nome do formulário existe
     if formulario not in nomes:
@@ -44,9 +64,10 @@ def formulario(request):
                 'instancias': instancias,
                 'exibir_navbar': True,
                 'contexto_app': 'formularios2'}
+
     try:
         funcionario = request.session.get('funcionario')
-        # lista dos resultados do funcionário em questão
+        # Lista dos resultados do funcionário em questão
         resultados = Resultado.objects.filter(funcionario=funcionario)
         # Vamos verificar se o formulário já foi realizado pelo usuário
         for resultado in resultados:
