@@ -243,38 +243,13 @@ def login_empresa(request):
         except ObjectDoesNotExist:
             # Erro inesperado
             return redirect('/auth/login_empresa/?status=2')
-
-def login_funcionario(request):
-    if request.method == 'GET':
-        contexto = {'exibir_navbar': True,
-                    'contexto_app:': 'auth',
-                    'status': request.GET.get('status')}
-        return render(request, 'login_funcionario.html', contexto)
-    elif request.method == 'POST':
-        request.session.flush()
-        email = request.POST.get('email')
-        senha = request.POST.get('senha')
-        #senha = sha256(senha.encode()).hexdigest()
-        try:
-            funcionario = Funcionario.objects.filter(email=email).filter(senha=senha)
-            if len(funcionario) > 0:
-                # Login bem-sucedido, o funcionário foi encontrado
-                request.session['funcionario'] = funcionario[0].id # <-- Aqui é definida a session 'funcionário'
-                return redirect('/painel/home_usuario')
-            elif len(funcionario) == 0:
-                # Email ou Senha incorretos
-                return redirect('/auth/login_funcionario/?status=1')
-        except ObjectDoesNotExist:
-            # Erro inesperado
-            return redirect('/auth/login_funcionario/?status=2')
-
-def login_candidato(request):
+def login_usuario(request):
     if request.method == 'GET':
         request.session.flush()
         contexto = {'exibir_navbar': True,
                     'contexto_app:': 'auth',
                     'status': request.GET.get('status')}
-        return render(request, 'login_candidato.html', contexto)
+        return render(request, 'login_usuario.html', contexto)
     elif request.method == 'POST':
         request.session.flush()
         email = request.POST.get('email')
@@ -283,23 +258,28 @@ def login_candidato(request):
             candidato = Candidato.objects.filter(email=email).filter(senha=senha)
             if len(candidato) > 0:
                 # Login bem-sucedido, o candidato foi encontrado
-                request.session['candidato'] = candidato[0].id # <-- Aqui é definida a session 'candidato'
+                request.session['candidato'] = candidato[0].id  # <-- Aqui é definida a session 'candidato'
                 return redirect('/painel/home_usuario')
             elif len(candidato) == 0:
                 # Email ou Senha incorretos
-                return redirect('/auth/login_candidato/?status=1')
-        except ObjectDoesNotExist:
-            # Erro inesperado
-            return redirect('/auth/login_candidato/?status=2')
-
+                return redirect('/auth/login_usuario/?status=1')
+        except:
+            try:
+                funcionario = Funcionario.objects.filter(email=email).filter(senha=senha)
+                if len(funcionario) > 0:
+                    # Login bem-sucedido, o funcionário foi encontrado
+                    request.session['funcionario'] = funcionario[0].id  # <-- Aqui é definida a session 'funcionário'
+                    return redirect('/painel/home_usuario')
+                elif len(funcionario) == 0:
+                    # Email ou Senha incorretos
+                    return redirect('/auth/login_usuario/?status=1')
+            except ObjectDoesNotExist:
+                # Erro inesperado
+                return redirect('/auth/login_usuario/?status=2')
 def logout_empresa(request):
     request.session.flush()
     return redirect('/auth/login_empresa')
 
-def logout_funcionario(request):
+def logout_usuario(request):
     request.session.flush()
-    return redirect('/auth/login_funcionario')
-
-def logout_candidato(request):
-    request.session.flush()
-    return redirect('/auth/login_candidato')
+    return redirect('/auth/login_usuario')

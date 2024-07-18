@@ -5,7 +5,7 @@ from empresas.models import Empresa, Funcionario, Candidato
 from formularios2.models import Resultado
 from django.contrib.auth.models import User
 import re
-from empresas.views import logout_empresa, logout_funcionario, logout_candidato
+from empresas.views import logout_empresa, logout_usuario
 from datetime import datetime
 
 def home_empresa(request):

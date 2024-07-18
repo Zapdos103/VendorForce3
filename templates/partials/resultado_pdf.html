@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% load static %}
@@ -24,11 +23,6 @@
             <p>Idade: {{idade}}</p>
             <p>Data de preenchimento:{{data}}</p>
             <p>Formação Academica - {{formacao}}</p>
-            </div>
-            <div class="col-md-6 text-right">
-                {% if not pdf %}
-                <a href="{% url 'resultado' funcionario.id %}?pdf=true" target="_blank">Baixar PDF</a>
-                {% endif %}
             </div>
         </div>
         <div>

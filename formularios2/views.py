@@ -6,8 +6,13 @@ import random
 from django.http import HttpResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import pdfkit
+from django.urls import reverse
+from django.template.loader import render_to_string
 from datetime import datetime
+import tempfile
 
+config = pdfkit.configuration(wkhtmltopdf=r"C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
 """Segunda tentativa de criar os invenários"""
 
 def gerenciar_formularios(request):
@@ -119,6 +124,26 @@ def coletar_respostas(request):
             return HttpResponse(json.dumps({'status': 1, 'funcionario': bool(funcionario)}))
         except Exception as e:
             return JsonResponse({'erro': str(e)}, status=500)
+
+def coletar_resultado(request, funcionario_id):
+    funcionario = Funcionario.objects.get(id=funcionario_id)
+    resultados = Resultado.objects.filter(funcionario=funcionario)
+    pontuacao = []
+    frases = []
+    labels = []
+    for resultado in resultados:
+        pontuacao.append(resultado.pontuacao)
+        frases.append(resultado.frase)
+        labels.append(resultado.nome_formulario)
+    data_json = {
+        'funcionario': {'id': funcionario.id, 'nome': funcionario.nome},
+        'resultados': list(zip(labels, pontuacao, frases)),
+        'pontuacao': pontuacao,
+        'frases': frases,
+        'labels': labels,
+    }
+    return JsonResponse(data_json)
+
 def resultado(request, funcionario_id):
     funcionario = Funcionario.objects.get(id=funcionario_id)
     # Verifica se o usuário tem permissão para visualizar a página
@@ -140,23 +165,18 @@ def resultado(request, funcionario_id):
                 'formacao': None,
                 'resultados': resultados,
                 }
+    """
+    if 'pdf' in request.GET:
+        pdf = pdfkit.from_string(render_to_string('resultado.html', contexto), False, configuration=config)
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="resultado.pdf"'
+        return response
+    """
+
     return render(request, 'resultado.html', contexto)
 
-def coletar_resultado(request, funcionario_id):
-    funcionario = Funcionario.objects.get(id=funcionario_id)
-    resultados = Resultado.objects.filter(funcionario=funcionario)
-    pontuacao = []
-    frases = []
-    labels = []
-    for resultado in resultados:
-        pontuacao.append(resultado.pontuacao)
-        frases.append(resultado.frase)
-        labels.append(resultado.nome_formulario)
-    data_json = {
-        'funcionario': {'id': funcionario.id, 'nome': funcionario.nome},
-        'resultados': list(zip(labels, pontuacao, frases)),
-        'pontuacao': pontuacao,
-        'frases': frases,
-        'labels': labels,
-    }
-    return JsonResponse(data_json)
+def gerar_pdf(request, funcionario_id):
+    pdf = pdfkit.from_url(request.build_absolute_uri(reverse('resultado', args=[funcionario_id])), False, configuration=config)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="inserir_nome.pdf"'
+    return response
