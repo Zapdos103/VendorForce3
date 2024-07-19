@@ -12,9 +12,11 @@ from django.template.loader import render_to_string
 from datetime import datetime
 import tempfile
 
-config = pdfkit.configuration(wkhtmltopdf=r"C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
-# TO-DO: transferir o executavel wkhtmltopdf para a VPS e mudar seu path
-# TO-DO: atualizar requirements.txt
+"""
+config = pdfkit.configuration(wkhtmltopdf=r"C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe") <-- Local
+config = pdfkit.configuration(wkhtmltopdf=r"/root/packages") <-- VPS
+"""
+
 # TO-DO: atualizar atributos dos usuários
 # TO-DO: atribuir a opção de excluir um funcionario de uma empresa
 """Segunda tentativa de criar os invenários"""
@@ -197,7 +199,14 @@ def resultado(request, funcionario_id):
     return render(request, 'resultado.html', contexto)
 
 def gerar_pdf(request, funcionario_id):
+    """
+    Gera o pdf do resultado do funcionário em questão
+
+    """
+    """
     pdf = pdfkit.from_url(request.build_absolute_uri(reverse('resultado', args=[funcionario_id])), False, configuration=config)
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="inserir_nome.pdf"'
     return response
+    """
+    pass

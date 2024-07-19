@@ -3,6 +3,9 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.http import HttpResponse
 from django.shortcuts import redirect
+
+def logout_usuario_por_email(email):
+    pass
 @receiver(post_save, sender=Funcionario)
 def excluir_candidato(sender, instance, **kwargs):
     """

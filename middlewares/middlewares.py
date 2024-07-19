@@ -1,3 +1,6 @@
+from django.contrib.auth import logout
+from django.contrib.auth.middleware import get_user
+
 def middleware_teste(get_response):
     # Código de inicialização do Middleware
     def middleware(request):
