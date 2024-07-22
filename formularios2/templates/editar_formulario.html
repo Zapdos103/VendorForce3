@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'head %}
+{% endblock %}
+
+{% block 'title' %}Editar Formulário{% endblock %}
+
+{% block 'body' %}
+<div class="container px-1 mt-3">
+    <h2>Editar Formulário - {{formulario.nome}}</h2>
+    <br>
+    <div>
+        Nome
+        <br>
+        Tópico
+        <br>
+        Número de Questões
+        <br>
+        Tempo (minutos)
+        <br>
+        Texto
+        <br>
+    </div>
+</div>
+
+{% endblock%}

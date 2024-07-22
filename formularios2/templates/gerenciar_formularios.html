@@ -9,43 +9,54 @@
 {% block 'navbar' %} {% endblock %}
 
 {% block 'body' %}
-<!-- blocos condicionais podem nao estar funcionando nesta pagina -->
-<h3>Gerenciar Formulários</h3>
-<br>
-<div class="container">
-
-    {% if status == '2' %}
-        <div class="alert alert-warning" role="alert">
-            Você precisa concluir todos os formulários para visualizar o seu resultado.
-        </div>
-    {% endif %}
-
-    <div class="card-view">
-        <table class="table table-striped">
-            <tr>
-                <th>Nome</th>
-                <th>Duração</th>
-                <th>Tópico</th>
-                <th>Número de Questões</th>
-                <th>Status</th>
-            </tr>
-            {% for formulario in formularios %}
-                <tr class="linha_tabela">
-                    <th><a href="/formularios2/formulario/?formulario={{ formulario.nome|urlencode }}">{{formulario.nome}}</a></th>
-                    <th>{{formulario.tempo}} minutos</th>
-                    <th>{{formulario.topico}}</th>
-                    <th>{{formulario.qtd_perguntas}}</th>
-                    <th></th>
-                </tr>
-            {% endfor %}
-        </table>
-        <br>
-        {% if funcionario %}
-            <h1>teste</h1>
-            {% if funcionario.verificar_status %}
-                    <a href="{% url 'resultado/funcionario.id' %}">Ver Resultado</a>
-            {% endif %}
+<!-- blocos condicionais podem nao estar funcionando nesta pagina! -->
+<div class="container px-1 mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3>Gerenciar Formulários</h3>
+        {% if editar %}
+            <a href="#" class="btn btn-success">Novo Formulário</a>
         {% endif %}
     </div>
+
+    <br>
+        {% if status == '2' %}
+            <div class="alert alert-warning" role="alert">
+                Você precisa concluir todos os formulários para visualizar o seu resultado.
+            </div>
+        {% endif %}
+
+        <div class="card-view">
+            <table class="table table-striped">
+                <tr>
+                    <th>Nome</th>
+                    <th>Duração</th>
+                    <th>Tópico</th>
+                    <th>Número de Questões</th>
+                    <th>Status</th>
+                    {% if editar %}
+                        <th></th>
+                    {% endif %}
+                </tr>
+                {% for formulario in formularios %}
+                    <tr class="linha_tabela">
+                        <th><a href="/formularios2/formulario/?formulario={{ formulario.nome|urlencode }}">{{formulario.nome}}</a></th>
+                        <th>{{formulario.tempo}} minutos</th>
+                        <th>{{formulario.topico}}</th>
+                        <th>{{formulario.qtd_perguntas}}</th>
+                        <th></th>
+                        {% if editar %}
+                            <th><a href="/formularios2/editar_formulario/{{formulario.uid}}" class="btn btn-danger">Editar</a></th>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+            {% if funcionario %}
+                <h1>funcionario: True</h1>
+                {% if funcionario.verificar_status %}
+                        <a href="{% url 'resultado/funcionario.id' %}">Ver Resultado</a>
+                {% endif %}
+            {% endif %}
+        </div>
 </div>
 {% endblock %}

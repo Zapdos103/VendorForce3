@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block 'head' %}
+{% endblock %}
+
+{% block 'title' %} {% endblock %}
+
+{% block 'body' %}
+
+<br>
+<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">{{ funcionario.nome }}</h5>
+    <p class="card-text">Aqui vão algumas informações importantes sobre este usuário.</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>
+<br>
+{% if empresarial %}
+  <!-- TO-DO: adicionar modal ao botao abaixo -->
+  <button type="button" class="btn btn-danger" onclick="redirecionarParaExcluirFuncionario()">Excluir Funcionário</button>
+  <script>
+    var funcionarioId = "{{ funcionario.id|escapejs }}";
+    function redirecionarParaExcluirFuncionario() {
+    var funcionarioId = "{{funcionario.id|escapejs}}";
+    window.location.href = "/painel/excluir_funcionario/" + funcionarioId
+  </script>
+{% endif %}
+<div>
+</div>
+
+{% endblock %}
+

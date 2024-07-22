@@ -21,6 +21,10 @@ function redirecionarParaFuncionario() {
         window.location.href = "/auth/cadastro_funcionario";
 }
 
+function redirecionarParaEditarFormularios() {
+        window.location.href = "/formularios2/gerenciar_formularios";
+}
+
 function logoutEmpresa() {
         if (confirm('Deseja mesmo sair da conta?')) {
             window.location.href = "/auth/logout_empresa/";

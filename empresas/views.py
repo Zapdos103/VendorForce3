@@ -255,24 +255,25 @@ def login_usuario(request):
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         try:
-            candidato = Candidato.objects.filter(email=email).filter(senha=senha)
-            if len(candidato) > 0:
+            funcionario = Funcionario.objects.filter(email=email).filter(senha=senha)
+            if len(funcionario) > 0:
                 # Login bem-sucedido, o candidato foi encontrado
-                request.session['candidato'] = candidato[0].id  # <-- Aqui é definida a session 'candidato'
+                request.session['funcionario'] = funcionario[0].id  # <-- Aqui é definida a session 'funcionario'
                 return redirect('/painel/home_usuario')
-            elif len(candidato) == 0:
+            elif len(funcionario) == 0:
                 # Email ou Senha incorretos
                 return redirect('/auth/login_usuario/?status=1')
         except:
             try:
-                funcionario = Funcionario.objects.filter(email=email).filter(senha=senha)
-                if len(funcionario) > 0:
+                candidato = Candidato.objects.filter(email=email).filter(senha=senha)
+                if len(candidato) > 0:
                     # Login bem-sucedido, o funcionário foi encontrado
-                    request.session['funcionario'] = funcionario[0].id  # <-- Aqui é definida a session 'funcionário'
+                    request.session['candidato'] = candidato[0].id  # <-- Aqui é definida a session 'candidato'
                     return redirect('/painel/home_usuario')
-                elif len(funcionario) == 0:
+                elif len(candidato) == 0:
                     # Email ou Senha incorretos
                     return redirect('/auth/login_usuario/?status=1')
+                print(request.session)
             except ObjectDoesNotExist:
                 # Erro inesperado
                 return redirect('/auth/login_usuario/?status=2')

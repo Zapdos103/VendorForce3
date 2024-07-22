@@ -14,7 +14,7 @@ import tempfile
 
 """
 config = pdfkit.configuration(wkhtmltopdf=r"C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe") <-- Local
-config = pdfkit.configuration(wkhtmltopdf=r"/root/packages") <-- VPS
+config = pdfkit.configuration(wkhtmltopdf=r"/root/packages/wkhtmltopdf.exe") <-- VPS/Cloud
 """
 
 # TO-DO: atualizar atributos dos usuários
@@ -24,6 +24,7 @@ config = pdfkit.configuration(wkhtmltopdf=r"/root/packages") <-- VPS
 def gerenciar_formularios(request):
     # print(request.session.keys())
     exibir_navbar = True
+    editar = False
     if not (request.session.get('funcionario') or request.session.get('empresa')):
         return HttpResponse('Você não tem permissão para acessar esta página.')
 
@@ -31,17 +32,23 @@ def gerenciar_formularios(request):
     if request.session.get('empresa'):
         empresa = Empresa.objects.get(id=request.session['empresa'])
         formularios = Formulario.objects.filter(empresa=empresa)
+        editar = True
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
         formularios = Formulario.objects.filter(empresa=empresa)
     try:
+        # Vamos tentar passar a var funcionario
         print(funcionario.id)
         return render(request, 'gerenciar_formularios.html',
-                      {'exibir_navbar': exibir_navbar, 'formularios': formularios, 'funcionario': funcionario})
+                      {'exibir_navbar': exibir_navbar, 'editar': editar, 'formularios': formularios, 'funcionario': {'verificar_status': funcionario.verificar_status}})
     except:
-        return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'formularios': formularios})
+        return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'editar': editar, 'formularios': formularios})
 
+def editar_formulario(request, formulario_id):
+    formulario = Formulario.objects.get(uid=formulario_id)
+    contexto = {'formulario': {'uid': formulario.uid, 'nome': formulario.nome}}
+    return render(request, 'editar_formulario.html', contexto)
 def formulario(request):
     if not (request.session.get('funcionario') or request.session.get('empresa')):
         return HttpResponse('Faça seu login.')

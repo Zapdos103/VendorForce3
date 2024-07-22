@@ -12,22 +12,34 @@
 {% block 'navbar' %} {% endblock %}
 
 {% block 'body' %}
+
+<div class="container px-1 mt-3">
+    {% if status == '1' %}
+        <div class="alert alert-warning" role="alert">
+            Atenção: Funcionário excluído com sucesso.
+        </div>
+    {% endif %}
     <h1>{{ empresa.nome }}</h1>
     <hr>
 
     <!-- Botoes do menu -->
     <div style="display: flex; justify-content: space-between; align-items: center;">
-
-        <div>
+        <!-- TO-DO: mudar navegação -->
+        <div class="d-grid gap-2 d-md-block">
+            <!-- Esquerda -->
             <button type="button" class="btn btn-primary" onclick="redirecionarParaCandidatos()">Candidatos</button>
             <button type="button" class="btn btn-primary" onclick="redirecionarParaRelatorio()">Relatórios</button>
             <button type="button" class="btn btn-primary">Enviar Convite</button>
             <button type="button" class="btn btn-primary" onclick="redirecionarParaDashboard()">Dashboard</button>
             <button type="button" class="btn btn-primary" onclick="redirecionarParaConfig()">Configurações</button>
-            <button type="button" id="Sair" class="btn btn-danger" onclick="logoutEmpresa()">Sair</button>
-
-
+            <button type="button" class="btn btn-warning" onclick="redirecionarParaEditarFormularios()">Editar Formulários</button>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <!-- Direita -->
+            <button type="button" id="Sair" class="btn btn-danger" onclick="logoutEmpresa()">Sair</button>
+        </div>
+
+
     </div>
     <br>
 
@@ -58,18 +70,17 @@
               <th scope="col">Ultimo Envio</th>
               <th scope="col">Status</th>
               <th scope="col">Relatório</th>
+              <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
             {% for funcionario in funcionarios %}
                 <tr>
-                  <th scope="row"><a href="{% url 'gerenciar_funcionario' funcionario.id %}">{{ funcionario.nome}}</a></th>
+                  <th scope="row">{{ funcionario.nome}}</th>
                   <td>{{ funcionario.email }}</td>
                   <td>{{ funcionario.telefone}} </td>
                   <td>NaN</td>
-                  <td>
-                          {{funcionario.badge_template}}
-                  </td>
+                  <td>{{funcionario.badge_template}}</td>
                   <td>
                       {% if funcionario.verificar_status %}
                         <!-- TO-DO: colocar o link -->
@@ -78,11 +89,13 @@
                         <a href="#" class="btn btn-light disabled">Abrir</a>
                       {% endif %}
                   </td>
+                  <td><a href="{% url 'perfil_funcionario' funcionario.id %}" class="btn btn-info">Perfil</a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     <div class="col-md-3">
     </div>
+</div>
 
 {% endblock %}

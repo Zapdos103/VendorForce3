@@ -67,6 +67,7 @@ class Empresa(models.Model):
     endereco_cobranca = models.CharField(max_length=100)
     contato_financeiro = models.CharField(max_length=100)
     telefone_financeiro = models.CharField(max_length=11)
+    # status_questionario = 0 (default, adicionar +1 a cada novo formulario)
 
     def __str__(self):
         return self.nome

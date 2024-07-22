@@ -2,7 +2,7 @@ from .models import Candidato, Funcionario, Empresa
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 
 def logout_usuario_por_email(email):
     pass
@@ -23,11 +23,10 @@ def excluir_candidato(sender, instance, **kwargs):
 @receiver(post_delete, sender=Funcionario)
 def excluir_funcionario(sender, instance, **kwargs):
     """
-    Esta funcao irá excluir o funcionario se este for demitido,
-    e ele voltará a ser um candidato.
+    Esta funcao irá transformar um funcionário em candidato caso este funcionário seja deletado.
     """
     try:
-        #Criar o candidato
+        # Criar o candidato
         candidato = Candidato(
             nome_completo = instance.nome,
             email = instance.email,

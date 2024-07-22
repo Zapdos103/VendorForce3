@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from empresas.models import Empresa, Funcionario, Candidato
 from formularios2.models import Resultado
 from django.contrib.auth.models import User
@@ -25,18 +25,21 @@ def candidatos_empresa(request): # Desnecessário? sim -> home dinâmica
     candidatos = Candidato.objects.all()
     return render(request, 'candidatos_empresa.html', {'empresa': empresa, 'funcionarios': funcionarios, 'emails': emails, 'candidatos': candidatos})
 
-def gerenciar_funcionario(request, funcionario_id): # Desnecessário? sim -> gerenciar pela home
-    funcionario = Funcionario.objects.get(id=funcionario_id)
-    return render(request, 'perfil_usuario.html', {'funcionario': funcionario})
-def gerenciar_candidato(request, candidato_id): # Desnecessário? sim -> gerenciar pela home
-    candidato = Candidato.objects.get(id=candidato_id)
-    return render(request, 'perfil_usuario.html', {'candidato': candidato})
-
 def dashboard_empresa(request):
     return render(request, 'dashboard_empresa.html')
 
 def config_empresa(request):
     return render(request, 'config_empresa.html')
+def excluir_funcionario(request, funcionario_id):
+    # TO-DO: adicionar modal ao botao de excluir funcionario
+    funcionario = Funcionario.objects.get(id=funcionario_id)
+    if request.session.get('empresa'):
+        empresa = Empresa.objects.get(id=request.session['empresa'])
+        if funcionario.empresa == empresa:
+            funcionario.delete()
+            return redirect('/painel/home_empresa/?status=1')
+        return redirect('/painel/home_empresa')
+    return redirect('/painel/home_empresa')
 
 def home_usuario(request):
     exibir_navbar = True
@@ -50,13 +53,24 @@ def home_usuario(request):
     return render(request, 'home_usuario.html',
                   {'usuario': usuario, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
 
-def perfil(request, usuario_id):
-    exibir_navbar = True
-    contexto_app = 'painel'
+def perfil_funcionario(request, funcionario_id):
+    empresarial = False
+    editar = False
+    funcionario = Funcionario.objects.get(id=funcionario_id)
+    if request.session.get('empresa'):
+        empresa = Empresa.objects.get(id=request.session['empresa'])
+        if funcionario.empresa.id == empresa.id:
+            empresarial = True
     if request.session.get('funcionario'):
-        usuario = Funcionario.objects.get(id=request.session['funcionario'])
-    elif request.session.get('candidato'):
-        usuario = Candidato.objects.get(id=request.session['candidato'])
-    else:
-        return redirect('/auth/login_candidato/?status=2')
-    return render(request, 'perfil_usuario.html')
+        if Funcionario.objects.get(id=request.session['funcionario']).id == funcionario_id:
+            editar = True
+
+    contexto = {
+        'exibir_navbar': True,
+        'contexto_app': 'painel',
+        'funcionario': {'id': funcionario.id, 'nome': funcionario.nome, 'email': funcionario.email},
+        'empresarial': empresarial,
+        'editar': 'editar'
+    }
+
+    return render(request, 'perfil_funcionario.html', contexto)

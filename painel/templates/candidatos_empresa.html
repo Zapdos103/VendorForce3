@@ -33,7 +33,7 @@
                 {% if candidato.email not in emails %}
                     <!-- verifica se o candidato já é um funcionário da empresa; se sim -> nao mostrar; se nao -> mostrar -->
                     <tr>
-                      <th scope="row"><a href="{% url 'gerenciar_candidato' candidato.id%}">{{ candidato.nome}}</a></th>
+                      <th scope="row"><a href="#">{{ candidato.nome}}</a></th>
                       <td>{{ candidato.email }}</td>
                       <td>{{ candidato.telefone}} </td>
                       <td>NaN</td>
