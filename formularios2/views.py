@@ -18,7 +18,7 @@ config = pdfkit.configuration(wkhtmltopdf=r"/root/packages/wkhtmltopdf.exe") <--
 """
 
 # TO-DO: atualizar atributos dos usuários
-# TO-DO: atribuir a opção de excluir um funcionario de uma empresa
+# TO-DO: atribuir a opção de excluir VÁRIOS funcionários de uma empresa
 """Segunda tentativa de criar os invenários"""
 
 def gerenciar_formularios(request):
