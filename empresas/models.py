@@ -85,6 +85,7 @@ class Funcionario(models.Model):
     # nascimento = models.DateField()
     # formacao academica
     status_questionario = models.IntegerField(default=0)
+    # qtd_formularios = models.IntegerField(default=0)
     # ultimo_envio = models.DateField(null=True)
 
 
@@ -95,6 +96,7 @@ class Funcionario(models.Model):
     def verificar_status(self):
         # TO-DO: malear de acordo com o número de formulários
         return True if self.status_questionario == 6 else False
+    
     @property
     def idade(self):
         # return timezone.now() - self.nascimento

@@ -19,6 +19,7 @@ class Formulario(BaseModel):
     tempo = models.IntegerField(help_text='Duração do teste em minutos')
     texto = models.CharField(max_length=300)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+    formularios = models.ManyToManyField(Funcionario, related_name='formularios', blank=True)
 
     def __str__(self):
         return str(self.nome)

@@ -5,11 +5,15 @@
 {% block 'head' %}
 {% endblock %}
 
-{% block 'title' %} {% endblock %}
+{% block 'title' %}{{funcionario.nome}}{% endblock %}
 
 {% block 'body' %}
 
 <br>
+
+{% if status == '1' %}
+{% endif %}
+
 <div class="card" style="width: 18rem;">
   <img src="..." class="card-img-top" alt="...">
   <div class="card-body">
@@ -20,17 +24,55 @@
 </div>
 <br>
 {% if empresarial %}
-  <!-- TO-DO: adicionar modal ao botao abaixo -->
-  <button type="button" class="btn btn-danger" onclick="redirecionarParaExcluirFuncionario()">Excluir Funcionário</button>
-  <script>
-    var funcionarioId = "{{ funcionario.id|escapejs }}";
-    function redirecionarParaExcluirFuncionario() {
-    var funcionarioId = "{{funcionario.id|escapejs}}";
-    window.location.href = "/painel/excluir_funcionario/" + funcionarioId
-  </script>
+  <!-- Botão que abre o modal -->
+  <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmarExclusao">Excluir Funcionário</button>
+  <br>
+  <br>
+  <h5>Selecione os formulários deste funcionário</h5>
+
+  <form method="POST" action="">"{% csrf_token %}"
+    {% for formulario in formularios %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="formularios" value="{{ formulario.id }}" id="formulario_{{ formulario.id }}">
+        <label class="form-check-label" for="formulario_{{ formulario.id }}">
+          <h5>{{ formulario.nome }}</h5>
+        </label>
+      </div>    
+    {% endfor %}
+    <br>
+    <button type="button" class="btn btn-primary">Salvar</button>
+  </form>
 {% endif %}
+
 <div>
 </div>
 
-{% endblock %}
+<!-- Modal -->
+<div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" role="dialog" aria-labelledby="tituloModalConfirmarExclusao" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tituloModalConfirmarExclusao">Confirmação de Exclusão</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Você tem certeza que deseja excluir o funcionário?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+        <button type="button" class="btn btn-danger" id="botaoConfirmarExclusao">Sim, excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script>
+  document.getElementById('botaoConfirmarExclusao').addEventListener('click', function() {
+    var funcionarioId = "{{ funcionario.id|escapejs }}";
+    window.location.href = "/painel/excluir_funcionario/" + funcionarioId;
+  });
+</script>
+
+{% endblock %}

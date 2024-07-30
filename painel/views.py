@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from empresas.models import Empresa, Funcionario, Candidato
-from formularios2.models import Resultado
+from formularios2.models import Formulario, Resultado
 from django.contrib.auth.models import User
 import re
 from empresas.views import logout_empresa, logout_usuario
@@ -30,16 +30,28 @@ def dashboard_empresa(request):
 
 def config_empresa(request):
     return render(request, 'config_empresa.html')
+
 def excluir_funcionario(request, funcionario_id):
     # TO-DO: adicionar modal ao botao de excluir funcionario
     funcionario = Funcionario.objects.get(id=funcionario_id)
     if request.session.get('empresa'):
         empresa = Empresa.objects.get(id=request.session['empresa'])
-        if funcionario.empresa == empresa:
+        print(empresa)
+        if funcionario.empresa.id == empresa.id:
             funcionario.delete()
             return redirect('/painel/home_empresa/?status=1')
         return redirect('/painel/home_empresa')
     return redirect('/painel/home_empresa')
+
+def salvar_formularios(request, funcionario_id):
+    funcionario = Funcionario.objects.get(id=funcionario_id)
+    if request.method == 'POST':
+        ids = request.POST.getlist('formularios')
+        formularios = Formulario.objects.filter(id__in=ids)
+        # Vamos adicionar o funcionário aos formularios selecionados
+        for formulario in formularios:
+            formulario.funcionarios.add(funcionario)
+    return redirect(request, 'perfil_funcionario.html/?status=1')
 
 def home_usuario(request):
     exibir_navbar = True
@@ -56,11 +68,13 @@ def home_usuario(request):
 def perfil_funcionario(request, funcionario_id):
     empresarial = False
     editar = False
+    formularios = None
     funcionario = Funcionario.objects.get(id=funcionario_id)
     if request.session.get('empresa'):
         empresa = Empresa.objects.get(id=request.session['empresa'])
         if funcionario.empresa.id == empresa.id:
             empresarial = True
+            formularios = Formulario.objects.filter(empresa=empresa)
     if request.session.get('funcionario'):
         if Funcionario.objects.get(id=request.session['funcionario']).id == funcionario_id:
             editar = True
@@ -70,7 +84,7 @@ def perfil_funcionario(request, funcionario_id):
         'contexto_app': 'painel',
         'funcionario': {'id': funcionario.id, 'nome': funcionario.nome, 'email': funcionario.email},
         'empresarial': empresarial,
-        'editar': 'editar'
+        'editar': 'editar',
+        'formularios': formularios
     }
-
     return render(request, 'perfil_funcionario.html', contexto)

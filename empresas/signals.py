@@ -28,7 +28,7 @@ def excluir_funcionario(sender, instance, **kwargs):
     try:
         # Criar o candidato
         candidato = Candidato(
-            nome_completo = instance.nome,
+            nome = instance.nome,
             email = instance.email,
             senha = instance.senha,
             funcao = instance.funcao,
@@ -36,6 +36,5 @@ def excluir_funcionario(sender, instance, **kwargs):
         )
         candidato.save()
         # TO-DO: adicionar a lógica da session
-        return redirect('/painel/home_empresa')
-    except:
-        return HttpResponse('Erro interno do sistema.')
+    except Exception as e:
+        return print(f'Erro ao criar candidato: {e}')

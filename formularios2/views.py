@@ -19,6 +19,7 @@ config = pdfkit.configuration(wkhtmltopdf=r"/root/packages/wkhtmltopdf.exe") <--
 
 # TO-DO: atualizar atributos dos usuários
 # TO-DO: atribuir a opção de excluir VÁRIOS funcionários de uma empresa
+# TO-DO: malear o status_questionario
 """Segunda tentativa de criar os invenários"""
 
 def gerenciar_formularios(request):
@@ -36,7 +37,7 @@ def gerenciar_formularios(request):
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
-        formularios = Formulario.objects.filter(empresa=empresa)
+        formularios = Formulario.objects.filter(funcionarios__in=funcionario)
     try:
         # Vamos tentar passar a var funcionario
         print(funcionario.id)
@@ -46,23 +47,26 @@ def gerenciar_formularios(request):
         return render(request, 'gerenciar_formularios.html', {'exibir_navbar': exibir_navbar, 'editar': editar, 'formularios': formularios})
 
 def editar_formulario(request, formulario_id):
+    if not request.session.get('empresa'):
+        return HttpResponse('Você não tem permissão para acessar esta página.')
     formulario = Formulario.objects.get(uid=formulario_id)
     contexto = {'formulario': {'uid': formulario.uid, 'nome': formulario.nome}}
     return render(request, 'editar_formulario.html', contexto)
+
 def formulario(request):
     if not (request.session.get('funcionario') or request.session.get('empresa')):
         return HttpResponse('Faça seu login.')
     formulario = request.GET.get('formulario')
     instancias = Formulario.objects.get(nome=formulario)
 
-    # Verificar se o formulário pertence a empresa/(empresa do funcionario)
+    # Verificar se o formulário pertence a empresa/(empresa do funcionario) ou ao funcionário
     if request.session.get('empresa'):
         empresa = Empresa.objects.get(id=request.session['empresa'])
         formularios = Formulario.objects.filter(empresa=empresa)
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
-        formularios = Formulario.objects.filter(empresa=empresa)
+        formularios = Formulario.objects.filter(funcionarios__in=funcionario)
 
     nomes = [nome.nome for nome in formularios]
     # Verificar se o nome do formulário existe
@@ -88,6 +92,7 @@ def formulario(request):
         return render(request, 'formulario.html', contexto)
 
 def get_formulario(request):
+    #TO-DO: trocar para formularios
     try:
         questoes = Questao.objects.all()
         if request.GET.get('formulario'):
