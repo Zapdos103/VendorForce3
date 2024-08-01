@@ -8,6 +8,8 @@ import re
 from empresas.views import logout_empresa, logout_usuario
 from datetime import datetime
 
+# Empresa
+
 def home_empresa(request):
     exibir_navbar = True
     contexto_app = 'painel'
@@ -39,19 +41,21 @@ def excluir_funcionario(request, funcionario_id):
         print(empresa)
         if funcionario.empresa.id == empresa.id:
             funcionario.delete()
-            return redirect('/painel/home_empresa/?status=1')
-        return redirect('/painel/home_empresa')
-    return redirect('/painel/home_empresa')
+            return redirect(f'/painel/home_empresa/?status=1')
+        return redirect(f'/painel/perfil_funcionario/?status=2')
+    return redirect(f'/painel/perfil_funcionario/{funcionario_id}/?status=2')
 
 def salvar_formularios(request, funcionario_id):
-    funcionario = Funcionario.objects.get(id=funcionario_id)
+    funcionario = Funcionario.objects.get(id=funcionario_id).id
     if request.method == 'POST':
         ids = request.POST.getlist('formularios')
         formularios = Formulario.objects.filter(id__in=ids)
         # Vamos adicionar o funcionário aos formularios selecionados
         for formulario in formularios:
             formulario.funcionarios.add(funcionario)
-    return redirect(request, 'perfil_funcionario.html/?status=1')
+    return redirect(f'/painel/perfil_funcionario/{funcionario_id}/?status=0')
+
+# Usuário
 
 def home_usuario(request):
     exibir_navbar = True

@@ -11,7 +11,23 @@
 
 <br>
 
+{% if status == '0' %}
+  <div class="alert alert-success" role="alert">
+    Formulários salvos com sucesso.
+    {{funcionario.nome}} poderá acessá-los.
+  </div>
+{% endif %}
+
 {% if status == '1' %}
+  <div class="alert alert-info" role="alert">
+    Funcionário Excluído com sucesso.
+  </div>
+{% endif %}
+
+{% if status == '2' %}
+  <div class="alert alert-danger" role="alert">
+    Você não tem permissão para excluir este usuário.
+  </div>
 {% endif %}
 
 <div class="card" style="width: 18rem;">

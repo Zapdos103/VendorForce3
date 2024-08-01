@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http.response import HttpResponse, JsonResponse
 from .models import *
 from empresas.models import Candidato, Funcionario, Empresa
@@ -37,7 +37,8 @@ def gerenciar_formularios(request):
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
-        formularios = Formulario.objects.filter(funcionarios__in=funcionario)
+        formularios = Formulario.objects.filter(funcionarios=[funcionario])
+        print(formularios)   
     try:
         # Vamos tentar passar a var funcionario
         print(funcionario.id)
@@ -66,7 +67,7 @@ def formulario(request):
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
-        formularios = Formulario.objects.filter(funcionarios__in=funcionario)
+        formularios = Formulario.objects.filter(funcionarios__in=[funcionario])
 
     nomes = [nome.nome for nome in formularios]
     # Verificar se o nome do formulário existe

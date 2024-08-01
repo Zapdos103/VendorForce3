@@ -14,11 +14,25 @@
 {% block 'body' %}
 
 <div class="container px-1 mt-3">
+
+    {% if status == '0' %}
+        <div class="alert alert-success" role="alert">
+            Formularios adicionados com sucesso!
+        </div>
+    {% endif %}
+
     {% if status == '1' %}
         <div class="alert alert-warning" role="alert">
             Atenção: Funcionário excluído com sucesso.
         </div>
     {% endif %}
+
+    {% if status == '2' %}
+        <div class="alert alert-warning" role="alert">
+            Você não tem permissão para fazer esta configuração.
+        </div>
+    {% endif %}
+
     <h1>{{ empresa.nome }}</h1>
     <hr>
 

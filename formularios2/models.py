@@ -19,7 +19,7 @@ class Formulario(BaseModel):
     tempo = models.IntegerField(help_text='Duração do teste em minutos')
     texto = models.CharField(max_length=300)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
-    formularios = models.ManyToManyField(Funcionario, related_name='formularios', blank=True)
+    funcionarios = models.ManyToManyField(Funcionario, blank=True)
 
     def __str__(self):
         return str(self.nome)
@@ -33,6 +33,13 @@ class Formulario(BaseModel):
                 'qtd_respostas': q.qtd_resposta
             })
         return data
+    
+    @property
+    def lista_emails(self):
+        lista_emails = []
+        for email in self.funcionarios:
+            lista_emails.append(email)
+        return lista_emails
 
 class Categoria(BaseModel): # depois trocar para models.Model (exclua o banco de dados)
     nome = models.CharField(max_length=50)
