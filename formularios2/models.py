@@ -33,13 +33,6 @@ class Formulario(BaseModel):
                 'qtd_respostas': q.qtd_resposta
             })
         return data
-    
-    @property
-    def lista_emails(self):
-        lista_emails = []
-        for email in self.funcionarios:
-            lista_emails.append(email)
-        return lista_emails
 
 class Categoria(BaseModel): # depois trocar para models.Model (exclua o banco de dados)
     nome = models.CharField(max_length=50)

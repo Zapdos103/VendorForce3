@@ -37,8 +37,8 @@ def gerenciar_formularios(request):
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
-        formularios = Formulario.objects.filter(funcionarios=[funcionario])
-        print(formularios)   
+        formularios = Formulario.objects.filter(empresa=empresa)
+        #print formulario
     try:
         # Vamos tentar passar a var funcionario
         print(funcionario.id)
@@ -51,8 +51,20 @@ def editar_formulario(request, formulario_id):
     if not request.session.get('empresa'):
         return HttpResponse('Você não tem permissão para acessar esta página.')
     formulario = Formulario.objects.get(uid=formulario_id)
+    if formulario.empresa != Empresa.objects.get(id=request.session['empresa']):
+        return HttpResponse('Você não tem permissão para acessar esta página.')
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        topico = request.POST.get('topico')
+        qtd_questoes = request.POST.get('qtd_questoes')
+        tempo = request.POST.get('tempo')
+        texto = request.POST.get('texto')
+        # TO-DO: fazer as validacoes
     contexto = {'formulario': {'uid': formulario.uid, 'nome': formulario.nome}}
     return render(request, 'editar_formulario.html', contexto)
+
+def novo_formulario(request):
+    pass
 
 def formulario(request):
     if not (request.session.get('funcionario') or request.session.get('empresa')):
@@ -67,7 +79,7 @@ def formulario(request):
     else:
         funcionario = Funcionario.objects.get(id=request.session['funcionario'])
         empresa = funcionario.empresa
-        formularios = Formulario.objects.filter(funcionarios__in=[funcionario])
+        formularios = Formulario.objects.filter(empresa=empresa)
 
     nomes = [nome.nome for nome in formularios]
     # Verificar se o nome do formulário existe
@@ -92,8 +104,8 @@ def formulario(request):
     except:
         return render(request, 'formulario.html', contexto)
 
-def get_formulario(request):
-    #TO-DO: trocar para formularios
+def formularios(request):
+    # TO-DO: restringir a página
     try:
         questoes = Questao.objects.all()
         if request.GET.get('formulario'):

@@ -18,7 +18,7 @@ def home_empresa(request):
         funcionarios = Funcionario.objects.filter(empresa=empresa)
         return render(request, 'home_empresa.html', {'empresa': empresa, 'funcionarios': funcionarios, 'exibir_navbar': exibir_navbar, 'contexto_app': contexto_app})
     else:
-        return redirect('/painel/login_empresa/?status=2')
+        return redirect('/auth/login_empresa/?status=2')
 
 def candidatos_empresa(request): # Desnecessário? sim -> home dinâmica
     empresa = Empresa.objects.get(id=request.session['empresa'])
@@ -49,10 +49,19 @@ def salvar_formularios(request, funcionario_id):
     funcionario = Funcionario.objects.get(id=funcionario_id).id
     if request.method == 'POST':
         ids = request.POST.getlist('formularios')
-        formularios = Formulario.objects.filter(id__in=ids)
+        formularios_marcados = Formulario.objects.filter(id__in=ids)
+        todos_os_formularios = Formulario.objects.filter(empresa=funcionario.empresa)
         # Vamos adicionar o funcionário aos formularios selecionados
-        for formulario in formularios:
-            formulario.funcionarios.add(funcionario)
+        for formulario in todos_os_formularios:
+            if str(formulario.id) in ids:
+                formulario.funcionarios.add(funcionario)
+            # Devemos excluir os formularios nao marcados que estavam disponíveis para o usuário
+            else:
+                formulario.funcionarios.remove(funcionario)
+
+        for formulario in todos_os_formularios:
+            formulario.save()
+
     return redirect(f'/painel/perfil_funcionario/{funcionario_id}/?status=0')
 
 # Usuário
@@ -72,7 +81,7 @@ def home_usuario(request):
 def perfil_funcionario(request, funcionario_id):
     empresarial = False
     editar = False
-    formularios = None
+    formularios = False
     funcionario = Funcionario.objects.get(id=funcionario_id)
     if request.session.get('empresa'):
         empresa = Empresa.objects.get(id=request.session['empresa'])

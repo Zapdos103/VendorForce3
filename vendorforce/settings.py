@@ -112,6 +112,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+]
+PBKDF2_ITERATIONS = 320000
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

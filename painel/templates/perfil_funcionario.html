@@ -46,7 +46,7 @@
   <br>
   <h5>Selecione os formulários deste funcionário</h5>
 
-  <form method="POST" action="">"{% csrf_token %}"
+  <form method="POST" action="salvar_formularios">"{% csrf_token %}"
     {% for formulario in formularios %}
       <div class="form-check">
         <input class="form-check-input" type="checkbox" name="formularios" value="{{ formulario.id }}" id="formulario_{{ formulario.id }}">

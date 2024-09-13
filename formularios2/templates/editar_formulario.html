@@ -11,18 +11,35 @@
 <div class="container px-1 mt-3">
     <h2>Editar Formulário - {{formulario.nome}}</h2>
     <br>
+    <form action="#" method="POST"> {% csrf_token %}
     <div>
-        Nome
+        <div class="form-group">
+            <label>Nome</label>
+            <input name="nome" class="form-control" type="text" placeholder="Nome">
+        </div>
         <br>
-        Tópico
+        <div class="form-group">
+            <label>Tópico</label>
+            <input name="topico" class="form-control" type="text" placeholder="Tópico">
+        </div>
         <br>
-        Número de Questões
+        <div class="form-group">
+            <label>Número de Questões</label>
+            <input name="qtd_questoes" class="form-control" type="text" placeholder="Questões">
+        </div>
         <br>
-        Tempo (minutos)
+        <div class="form-group">
+            <label for="tempo">Tempo (minutos):</label>
+            <input name="tempo" id="tempo" class="form-control" type="number" placeholder="Minutos" min="5" max="120">
+        </div>
         <br>
-        Texto
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Texto explicativo</label>
+            <textarea class="form-control" id="texto" rows="4"></textarea>
+          </div>
         <br>
     </div>
+    </form>
 </div>
 
 {% endblock%}

@@ -89,7 +89,7 @@
         methods: {
             getQuestoes() {
                 var _this = this;
-                fetch(`{% url 'get_formulario' %}?formulario=${this.formulario}`)
+                fetch(`{% url 'formularios' %}?formulario=${this.formulario}`)
                     .then(response => response.json())
                     .then(result => {
                         _this.questoes = result.data;
