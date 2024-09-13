@@ -100,7 +100,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'assessment_db',
         'USER': 'kenzo',
-        'PASSWORD': 'sinsalab1M_$',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
