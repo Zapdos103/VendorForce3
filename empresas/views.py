@@ -81,7 +81,7 @@ def cadastro_landing(request):
                     setor=setor,
                     segmento=segmento,
                     qtd_vendedores=qtd_vendedores,
-                    senha=senha,
+                    senha=make_password(senha),
                 )
                 # Empresa cadastrada com sucesso
                 empresa.save()
@@ -207,7 +207,7 @@ def cadastro_candidato(request):
                 candidato = Candidato(
                     nome=nome_completo.strip(),
                     email=email,
-                    senha=senha,
+                    senha=make_password(senha),
                     funcao=funcao,
                     telefone=''.join(filter(str.isdigit, telefone)),
                 )
@@ -232,17 +232,20 @@ def login_empresa(request):
         # senha = sha256(senha.encode()).hexdigest()
         # empresa = Empresa.objects.get(email=email, senha=senha)
         try:
-            empresa = Empresa.objects.filter(email=email).filter(senha=senha)
-            if len(empresa) > 0:
+            empresa = Empresa.objects.filter(email=email)
+            if not empresa:
+                return redirect('/auth/login_empresa/?status=1')
+            if check_password(senha, empresa.senha):
                 # Login bem-sucedido, a empresa foi encontrada
                 request.session['empresa'] = empresa[0].id # <-- Aqui é definida a session 'empresa'
                 return redirect('/painel/home_empresa')
-            elif len(empresa) == 0:
+            else:
                 # Email ou Senha incorretos
                 return redirect('/auth/login_empresa/?status=1')
         except ObjectDoesNotExist:
             # Erro inesperado
             return redirect('/auth/login_empresa/?status=2')
+        
 def login_usuario(request):
     if request.method == 'GET':
         request.session.flush()
@@ -255,28 +258,33 @@ def login_usuario(request):
         email = request.POST.get('email')
         senha = request.POST.get('senha')
         try:
-            funcionario = Funcionario.objects.filter(email=email).filter(senha=senha)
-            if len(funcionario) > 0:
+            funcionario = Funcionario.objects.filter(email=email)
+            if not funcionario:
+                return redirect('/auth/login_usuario/?status=1')
+            if check_password(senha, funcionario.senha):
                 # Login bem-sucedido, o candidato foi encontrado
                 request.session['funcionario'] = funcionario[0].id  # <-- Aqui é definida a session 'funcionario'
                 return redirect('/painel/home_usuario')
-            elif len(funcionario) == 0:
+            else:
                 # Email ou Senha incorretos
                 return redirect('/auth/login_usuario/?status=1')
         except:
             try:
                 candidato = Candidato.objects.filter(email=email).filter(senha=senha)
-                if len(candidato) > 0:
+                if not candidato:
+                    return redirect('/auth/login_usuario/?status=1')
+                if check_password(senha, candidato.senha):
                     # Login bem-sucedido, o funcionário foi encontrado
                     request.session['candidato'] = candidato[0].id  # <-- Aqui é definida a session 'candidato'
                     return redirect('/painel/home_usuario')
-                elif len(candidato) == 0:
+                else:
                     # Email ou Senha incorretos
                     return redirect('/auth/login_usuario/?status=1')
                 print(request.session)
             except ObjectDoesNotExist:
                 # Erro inesperado
                 return redirect('/auth/login_usuario/?status=2')
+            
 def logout_empresa(request):
     request.session.flush()
     return redirect('/auth/login_empresa')
