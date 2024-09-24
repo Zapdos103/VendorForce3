@@ -98,10 +98,10 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'assessment_db',
-        'USER': 'kenzo',
+        'NAME': 'assessmentdb',
+        'USER': 'root',
         'PASSWORD': '1234',
-        'HOST': 'localhost',
+        'HOST': '89.116.74.142',
         'PORT': '3306',
         'OPTIONS': {
         'charset': 'utf8mb4',
