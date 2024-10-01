@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': 'assessmentdb',
         'USER': 'root',
         'PASSWORD': '1234',
-        'HOST': '89.116.74.142',
+        'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
         'charset': 'utf8mb4',
