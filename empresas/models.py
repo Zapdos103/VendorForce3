@@ -1,7 +1,7 @@
 
 from django.db import models
 from django.utils.safestring import mark_safe
-from datetime import datetime
+from datetime import date
 from datetime import timedelta
 
 # Create your models here.
@@ -82,7 +82,7 @@ class Funcionario(models.Model):
     senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10, blank=False)
     telefone = models.CharField(max_length=11, blank=False)
-    # nascimento = models.DateField()
+    nascimento = models.DateField(blank=False, null=False)
     # formacao academica
     status_questionario = models.IntegerField(default=0)
     # qtd_formularios = models.IntegerField(default=0)
@@ -99,8 +99,8 @@ class Funcionario(models.Model):
     
     @property
     def idade(self):
-        # return timezone.now() - self.nascimento
-        pass
+        hoje = date.today()
+        return hoje.year - self.nascimento.year - ((today.month, today.day) < (self.nascimento.month, self.nascimento.day))
 
     def badge_template(self):
         if self.status_questionario == 6:

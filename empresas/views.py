@@ -128,7 +128,6 @@ def cadastro_funcionario(request):
         if request.session.get('empresa'):
             empresa_id = request.session['empresa']
             email = request.POST.get('email')
-
             # Agora, vamos verificar se o candidato existe; se sim -> tentar salvar o funcionário; se não -> exibir status
             try:
                 funcionario1 = Candidato.objects.get(email=email)
@@ -162,6 +161,7 @@ def cadastro_candidato(request):
         elif request.method == 'POST':
             request.session.flush()
             nome_completo = request.POST.get('nome_completo')
+            data_de_nascimento = request.POST.get('data_de_nascimento')
             email = request.POST.get('email')
             senha = request.POST.get('senha')
             funcao = request.POST.get('funcao')
@@ -171,7 +171,6 @@ def cadastro_candidato(request):
             def já_registrado():
                 email2 = Candidato.objects.filter(email=email).first()
                 telefone2 = Candidato.objects.filter(telefone=telefone).first()
-
                 for campo in (email2, telefone2):
                     if campo:
                         return redirect('/auth/cadastro_candidato/?status=1')
@@ -206,6 +205,7 @@ def cadastro_candidato(request):
             try:
                 candidato = Candidato(
                     nome=nome_completo.strip(),
+                    data_de_nascimento=data_de_nascimento,
                     email=email,
                     senha=make_password(senha),
                     funcao=funcao,
