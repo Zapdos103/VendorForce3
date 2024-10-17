@@ -117,41 +117,6 @@ def cadastro_completo(request):
         #telefone_cobranca =
     pass
 
-def cadastro_funcionario(request):
-    if request.method == 'GET':
-        contexto = {'exibir_navbar': True,
-                    'contexto_app:': 'auth',
-                    'status': request.GET.get('status')}
-        return render(request, 'cadastro_funcionario.html', contexto)
-    elif request.method == 'POST':
-        # Primeiro verificamos se a empresa está logada; se sim -> tentar salvar os dados; se não -> exibir status
-        if request.session.get('empresa'):
-            empresa_id = request.session['empresa']
-            email = request.POST.get('email')
-            # Agora, vamos verificar se o candidato existe; se sim -> tentar salvar o funcionário; se não -> exibir status
-            try:
-                funcionario1 = Candidato.objects.get(email=email)
-                funcionario2 = Funcionario(
-                    empresa=Empresa.objects.get(id=empresa_id),
-                    nome=funcionario1.nome,
-                    email=funcionario1.email,
-                    senha=funcionario1.senha,
-                    funcao=funcionario1.funcao,
-                    telefone=funcionario1.telefone,
-                )
-                funcionario2.save()
-                # Funcionário cadastrado com sucesso
-                return redirect('/auth/cadastro_funcionario/?status=0')
-            except Candidato.DoesNotExist:
-                # Lidar com o caso em que o candidato não é encontrado
-                return redirect('/auth/cadastro_funcionario/?status=3')
-            except Exception as e:
-                # Erro inesperado
-                print(f'Erro ao salvar o funcionário: {str(e)}')
-                return redirect('/auth/cadastro_funcionario/?status=1')
-        # Caso o usuário não esteja logado em nenhuma empresa
-        return redirect('/auth/cadastro_funcionario/?status=2')
-
 def cadastro_candidato(request):
         if request.method == 'GET':
             contexto = {'exibir_navbar': True,
@@ -181,7 +146,7 @@ def cadastro_candidato(request):
                 return resultado_validação
 
             def campo_vazio():
-                for campo in (nome_completo, email, funcao, telefone):
+                for campo in (nome_completo, email, data_de_nascimento, funcao, telefone):
                     if len(campo) == 0 or campo.isspace():
                         return redirect('/auth/cadastro_candidato/?status=2')
                 return None  # Retorna None se não houver erro
@@ -199,6 +164,7 @@ def cadastro_candidato(request):
             resultado_validação = valida_email()
             if resultado_validação is not None:
                 return resultado_validação
+            
 
             # ... Outras Validações ...
             # Salvar o candidato no banco de dados
@@ -218,6 +184,42 @@ def cadastro_candidato(request):
                 # Erro inesperado
                 print(f'Erro ao salvar o candidato: {str(e)}')
                 return redirect('/auth/cadastro_candidato/?status=4')
+
+def cadastro_funcionario(request):
+    if request.method == 'GET':
+        contexto = {'exibir_navbar': True,
+                    'contexto_app:': 'auth',
+                    'status': request.GET.get('status')}
+        return render(request, 'cadastro_funcionario.html', contexto)
+    elif request.method == 'POST':
+        # Primeiro verificamos se a empresa está logada; se sim -> tentar salvar os dados; se não -> exibir status
+        if request.session.get('empresa'):
+            empresa_id = request.session['empresa']
+            email = request.POST.get('email')
+            # Agora, vamos verificar se o candidato existe; se sim -> tentar salvar o funcionário; se não -> exibir status
+            try:
+                funcionario1 = Candidato.objects.get(email=email)
+                funcionario2 = Funcionario(
+                    empresa=Empresa.objects.get(id=empresa_id),
+                    nome=funcionario1.nome,
+                    data_de_nascimento=funcionario1.data_de_nascimento,
+                    email=funcionario1.email,
+                    senha=funcionario1.senha,
+                    funcao=funcionario1.funcao,
+                    telefone=funcionario1.telefone,
+                )
+                funcionario2.save()
+                # Funcionário cadastrado com sucesso
+                return redirect('/auth/cadastro_funcionario/?status=0')
+            except Candidato.DoesNotExist:
+                # Lidar com o caso em que o candidato não é encontrado
+                return redirect('/auth/cadastro_funcionario/?status=3')
+            except Exception as e:
+                # Erro inesperado
+                print(f'Erro ao salvar o funcionário: {str(e)}')
+                return redirect('/auth/cadastro_funcionario/?status=1')
+        # Caso o usuário não esteja logado em nenhuma empresa
+        return redirect('/auth/cadastro_funcionario/?status=2')
 
 def login_empresa(request):
     if request.method == 'GET':
