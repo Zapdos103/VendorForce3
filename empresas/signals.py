@@ -30,6 +30,7 @@ def excluir_funcionario(sender, instance, **kwargs):
         candidato = Candidato(
             nome = instance.nome,
             email = instance.email,
+            data_de_nascimento=instance.data_de_nascimento,
             senha = instance.senha,
             funcao = instance.funcao,
             telefone = instance.telefone,
