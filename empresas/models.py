@@ -1,8 +1,7 @@
 
 from django.db import models
 from django.utils.safestring import mark_safe
-from datetime import date
-from datetime import timedelta
+import datetime
 
 # Create your models here.
 
@@ -120,7 +119,7 @@ class Candidato(models.Model):
     senha = models.CharField(max_length=100)
     funcao = models.CharField(max_length=10)
     telefone = models.CharField(max_length=11)
-    nascimento = models.DateField(blank=False, null=False, default='2000-01-01')
+    nascimento = models.DateField(blank=False, null=False, default=datetime.date(2000, 1, 1))
     # formacao academica
     status_questionario = models.IntegerField(default=0)
     # ultimo_envio = models.DateField(null=True)
